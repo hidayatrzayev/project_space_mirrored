@@ -2,15 +2,20 @@ package com.company;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
-public class GraphicSystem extends JPanel
+public class GraphicSystem extends JPanel implements MouseMotionListener
 {
     private GraphicsConfiguration graphicsConf =
             GraphicsEnvironment.getLocalGraphicsEnvironment().
                     getDefaultScreenDevice().getDefaultConfiguration();
     private BufferedImage imageBuffer;
     private Graphics graphics;
+
+    public int mosX;
 
 
     public GraphicSystem()
@@ -19,7 +24,7 @@ public class GraphicSystem extends JPanel
         imageBuffer = graphicsConf.createCompatibleImage(
                 this.getWidth(), this.getHeight());
         graphics = imageBuffer.getGraphics();
-
+        this.addMouseMotionListener(this);
 
     }
 
@@ -36,7 +41,7 @@ public class GraphicSystem extends JPanel
 
     public void draw()
     {
-        graphics.setColor(Color.LIGHT_GRAY);
+        graphics.setColor(Color.BLACK);
         graphics.fillRect(0,0, 1280, 720);
 
     }
@@ -46,4 +51,15 @@ public class GraphicSystem extends JPanel
     }
 
 
+    @Override
+    public void mouseDragged(MouseEvent e)
+    {
+        mosX = e.getX();
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e)
+    {
+        mosX = e.getX();
+    }
 }
