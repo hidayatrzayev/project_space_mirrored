@@ -13,6 +13,7 @@ public class GameWorld
     BufferedImage img = null;
 
     private GraphicSystem graphicSystem;
+    private InputSystem inputSystem;
 
     private Player player;
 
@@ -20,6 +21,7 @@ public class GameWorld
     {
         img = ImageIO.read((getClass().getClassLoader().getResourceAsStream("resources/player_ship.png")));
         player = new Player(100,530,0, img);
+        inputSystem = new InputSystem();
 
 
     }
@@ -29,10 +31,10 @@ public class GameWorld
         while(true)
         {
             graphicSystem.draw();
-            player.setPosX(graphicSystem.mosX);
+            player.setPosX(inputSystem.mosX);
             player.draw(graphicSystem.getG());
             graphicSystem.getG().setColor(Color.RED);
-            graphicSystem.getG().drawString((Integer.toString(graphicSystem.mosX)),  400, 400);
+            graphicSystem.getG().drawString((Integer.toString(inputSystem.mosX)),  400, 400);
             graphicSystem.redraw();
 
         }
