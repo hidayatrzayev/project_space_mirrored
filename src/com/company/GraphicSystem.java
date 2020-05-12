@@ -7,7 +7,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
-public class GraphicSystem extends JPanel /*implements MouseMotionListener*/
+public class GraphicSystem extends JPanel implements MouseMotionListener
 {
     private GraphicsConfiguration graphicsConf =
             GraphicsEnvironment.getLocalGraphicsEnvironment().
@@ -24,7 +24,7 @@ public class GraphicSystem extends JPanel /*implements MouseMotionListener*/
         imageBuffer = graphicsConf.createCompatibleImage(
                 this.getWidth(), this.getHeight());
         graphics = imageBuffer.getGraphics();
-        //this.addMouseMotionListener(this);
+        this.addMouseMotionListener(this);
 
     }
 
@@ -50,7 +50,7 @@ public class GraphicSystem extends JPanel /*implements MouseMotionListener*/
         this.getGraphics().drawImage(imageBuffer, 0, 0, this);
     }
 
-/*
+
     @Override
     public void mouseDragged(MouseEvent e)
     {
@@ -62,6 +62,6 @@ public class GraphicSystem extends JPanel /*implements MouseMotionListener*/
     {
         mosX = e.getX();
     }
-    */
+
 
 }
