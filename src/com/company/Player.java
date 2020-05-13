@@ -30,4 +30,8 @@ public class Player extends A_InteractableObject
     {
         this.posX = newPosX;
     }
+    public void setPosY(int newPosY)
+    {
+        this.posY = newPosY;
+    }
 }

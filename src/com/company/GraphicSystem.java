@@ -16,6 +16,7 @@ public class GraphicSystem extends JPanel implements MouseMotionListener
     private Graphics graphics;
 
     public int mosX;
+    public int mosY;
 
 
     public GraphicSystem()
@@ -55,12 +56,14 @@ public class GraphicSystem extends JPanel implements MouseMotionListener
     public void mouseDragged(MouseEvent e)
     {
         mosX = e.getX();
+        mosY = e.getY();
     }
 
     @Override
     public void mouseMoved(MouseEvent e)
     {
         mosX = e.getX();
+        mosY = e.getY();
     }
 
 

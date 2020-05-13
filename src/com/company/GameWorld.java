@@ -32,6 +32,8 @@ public class GameWorld
         {
             graphicSystem.draw();
             player.setPosX(graphicSystem.mosX);
+            //player.setPosY(graphicSystem.mosY);
+
             player.draw(graphicSystem.getG());
             graphicSystem.getG().setColor(Color.RED);
             graphicSystem.getG().drawString((Integer.toString(graphicSystem.mosX)),  400, 400);

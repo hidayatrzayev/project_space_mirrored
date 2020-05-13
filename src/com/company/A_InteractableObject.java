@@ -9,6 +9,7 @@ public abstract class A_InteractableObject
     boolean exploding, destroyed;
     BufferedImage img;
     int explosionStep = 0;
+    //Spaceship spaceship;
 
     public A_InteractableObject(int posX, int posY, int size, BufferedImage img)
     {
