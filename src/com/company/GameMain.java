@@ -10,7 +10,6 @@ public class GameMain
     {
         GameFrame frame = new GameFrame();
         frame.setVisible(true);
-
         gameWorld = new GameWorld();
         gameWorld.setGraphicSystem(frame.getPanel());
         gameWorld.setup();
