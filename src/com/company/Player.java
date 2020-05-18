@@ -9,6 +9,7 @@ public class Player extends A_InteractableObject
     {
         super(posX, posY, size, img);
     }
+
     public void update()
     {
 
@@ -24,6 +25,10 @@ public class Player extends A_InteractableObject
         {
             gc.drawImage(img, posX, posY, null);
         }
+    }
+
+    public Shot shoot() {
+        return new Shot(posX + 94 / 2 - Shot.size / 2, posY - Shot.size);
     }
 
     public void setPosX(int newPosX)
