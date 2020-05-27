@@ -1,0 +1,23 @@
+[
+{
+  "level": "1",
+  "backgroundPath": "resources/level1.jpg",
+  "complexity": "1",
+  "numberOfEnemies": "100",
+  "bossEnemy": "Baduba Boss"
+},
+  {
+    "level": "2",
+    "backgroundPath": "resources/level2.jpg",
+    "complexity": "2",
+    "numberOfEnemies": "200",
+    "bossEnemy": "Alaba Boss"
+  },
+  {
+    "level": "3",
+    "backgroundPath": "resources/level3.jpg",
+    "complexity": "3",
+    "numberOfEnemies": "300",
+    "bossEnemy": "Bla Bla Boss"
+  }
+]
