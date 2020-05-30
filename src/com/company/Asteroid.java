@@ -40,11 +40,16 @@ public class Asteroid extends A_InteractableObject{
 
     @Override
     public void draw(Graphics gc) {
-        gc.drawImage(this.img, this.posX, this.posY,null);
-    }
-
-    public Rectangle getBounds(){
-        return new Rectangle(posX, posY, img.getWidth(),img.getHeight());
+        if(!this.exploding) {
+            gc.drawImage(this.img, this.posX, this.posY, null);
+        }else{
+            if(explosionStep != 100) {
+                //gc.drawImage(this.img, this.posX, this.posY, null);
+                this.explosionStep++;
+            }else{
+                this.destroyed = true;
+            }
+        }
     }
 
 }

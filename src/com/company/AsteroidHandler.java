@@ -17,7 +17,7 @@ public class AsteroidHandler {
             ImageIO.read((getClass().getClassLoader().getResourceAsStream("resources/asteroid3.png"))),
             ImageIO.read((getClass().getClassLoader().getResourceAsStream("resources/asteroid4.png"))),
             ImageIO.read((getClass().getClassLoader().getResourceAsStream("resources/asteroid5.png")))));
-    private List<Asteroid> asteroids = new ArrayList<>();
+    private List<A_InteractableObject> asteroids = new ArrayList<>();
 
 
     public AsteroidHandler(int complexity) throws IOException {
@@ -49,7 +49,7 @@ public class AsteroidHandler {
     }
 
     public void updateAll(){
-        asteroids.forEach(Asteroid::update);
+        asteroids.forEach(A_InteractableObject::update);
         for(int asteroid = 0; asteroid < asteroids.size(); asteroid++){
             if(asteroids.get(asteroid).posX < 0 | asteroids.get(asteroid).posX > 1280 | asteroids.get(asteroid).posY > 780 ){
                 asteroids.remove(asteroid);
@@ -77,11 +77,11 @@ public class AsteroidHandler {
         this.presets = presets;
     }
 
-    public List<Asteroid> getAsteroids() {
+    public List<A_InteractableObject> getAsteroids() {
         return asteroids;
     }
 
-    public void setAsteroids(List<Asteroid> asteroids) {
+    public void setAsteroids(List<A_InteractableObject> asteroids) {
         this.asteroids = asteroids;
     }
 }
