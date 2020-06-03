@@ -23,11 +23,11 @@ public class Shot
         gc.setColor(Color.RED);
         gc.fillOval(posX, posY, size, size);
     }
-
+/*
     public boolean collide(A_InteractableObject Rocket) {
         int distance = Utilities.distance(this.posX + size / 2, this.posY + size / 2,
                 Rocket.posX + Rocket.size / 2, Rocket.posY + Rocket.size / 2);
         return distance  < Rocket.size / 2 + size / 2;
     }
-
+*/
 }

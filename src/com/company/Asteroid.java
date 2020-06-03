@@ -11,8 +11,8 @@ public class Asteroid extends A_InteractableObject{
 
 
 
-    public Asteroid(int direction, int speed, int posX, int posY, int size, BufferedImage img ){
-        super(posX, posY, size, img);
+    public Asteroid(int direction, int speed, int posX, int posY, int sizeX, int sizeY, BufferedImage img ){
+        super(posX, posY, sizeX, sizeY, img);
         this.direction = direction;
         this.speed = speed;
     }

@@ -27,7 +27,7 @@ public class GameWorld
     public void setup() throws IOException
     {
         img = ImageIO.read((getClass().getClassLoader().getResourceAsStream("resources/player_ship.png")));
-        player = new Player(100,480,0, img);
+        player = new Player(100,480,0, 0, img);
         inputSystem = new InputSystem();
         shots = new ArrayList();
 
@@ -50,6 +50,8 @@ public class GameWorld
                 if(shots.size() < 20) shots.add(player.shoot());
             }
         });
+
+
 
 
     }
