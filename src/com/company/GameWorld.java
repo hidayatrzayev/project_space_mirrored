@@ -53,7 +53,6 @@ public class GameWorld
 
 
 
-
     }
 
     public void run() throws InterruptedException {
@@ -66,7 +65,6 @@ public class GameWorld
             long updateLength = now - lastLoopTime;
             lastLoopTime = now;
             double delta = updateLength / ((double)OPTIMAL_TIME);
-
 
             graphicSystem.draw();
             player.draw(graphicSystem.getG());
