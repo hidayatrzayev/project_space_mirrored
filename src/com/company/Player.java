@@ -5,10 +5,11 @@ import java.awt.image.BufferedImage;
 
 public class Player extends A_InteractableObject
 {
-    public Player(int posX, int posY, int size, BufferedImage img)
+    public Player(int posX, int posY, int sizeX,int sizeY, BufferedImage img)
     {
-        super(posX, posY, size, img);
+        super(posX, posY, sizeX, sizeY, img);
     }
+
     public void update()
     {
 
@@ -24,6 +25,10 @@ public class Player extends A_InteractableObject
         {
             gc.drawImage(img, posX, posY, null);
         }
+    }
+
+    public Shot shoot() {
+        return new Shot(posX + 94 / 2 - Shot.size / 2, posY - Shot.size);
     }
 
     public void setPosX(int newPosX)

@@ -31,7 +31,8 @@ public class AsteroidHandler {
         BufferedImage image = presets.get(preset);
         int coin = rand.nextInt(4);
         int direction = coin;
-        int size = 0;
+        int sizeX = 0;
+        int sizeY = 0;
         int posX = 0;
         int posY = 0;
         if (coin == 1){
@@ -45,7 +46,7 @@ public class AsteroidHandler {
             posY = rand.nextInt(720);
         }
 
-        asteroids.add(new Asteroid(direction, speed, posX, posY, size, image));
+        asteroids.add(new Asteroid(direction, speed, posX, posY, sizeX, sizeY, image));
     }
 
     public void updateAll(){
