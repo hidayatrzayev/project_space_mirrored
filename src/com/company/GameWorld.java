@@ -22,7 +22,7 @@ public class GameWorld
     private InputSystem inputSystem;
 
     private Player player;
-    private ArrayList<Shot> shots;
+    private ArrayList<PlayerShot> shots;
 
     public void setup() throws IOException
     {
@@ -47,7 +47,13 @@ public class GameWorld
         graphicSystem.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(shots.size() < 20) shots.add(player.shoot());
+                if(shots.size() < 20) {
+                    try {
+                        shots.add(player.shoot());
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
+                }
             }
         });
 
@@ -69,7 +75,7 @@ public class GameWorld
             graphicSystem.draw();
             player.draw(graphicSystem.getG());
             for (int i = shots.size() - 1; i >=0 ; i--) {
-                Shot shot = shots.get(i);
+                PlayerShot shot = shots.get(i);
                 if (shot.posY < 0 || shot.toRemove) {
                     shots.remove(i);
                     continue;
