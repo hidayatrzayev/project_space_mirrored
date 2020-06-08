@@ -16,7 +16,7 @@ public class BossEnemyDeserializer implements Deserializer<BossEnemy> {
             String presetPath = (String) jsonObject.get("preset");
             BufferedImage preset = ImageIO.read((getClass().getClassLoader().getResourceAsStream(presetPath)));
             return new BossEnemy(1280 / 2 - preset.getWidth() / 2, -preset.getHeight(),
-                    0, 0, preset, speed, health);
+                    preset.getWidth(), preset.getHeight(), preset, speed, health);
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
