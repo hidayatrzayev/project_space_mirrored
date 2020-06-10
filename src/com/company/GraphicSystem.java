@@ -40,11 +40,11 @@ public class GraphicSystem extends JPanel /*implements MouseMotionListener*/
 
     }
 
-    public void draw()
+    public void draw(Universe universe)
     {
-        graphics.setColor(Color.BLACK);
-        graphics.fillRect(0,0, 1280, 720);
-
+        universe.draw(graphics);
+//        graphics.setColor(Color.BLACK);
+//        graphics.fillRect(0,0, 1280, 720);
     }
     public void redraw()
     {

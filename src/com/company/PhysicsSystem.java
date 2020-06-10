@@ -17,11 +17,7 @@ public class PhysicsSystem {
             for(A_InteractableObject object : objectGroup){
                 worldObjects.forEach(a_interactableObjects -> a_interactableObjects.forEach(a_interactableObject -> {
                     if (!object.equals(a_interactableObject)) {
-//                        if(a_interactableObject.getBounds().intersects(object.getBounds())){
-//                            a_interactableObject.exploding = object.exploding = true;
-//                            explodingObjects.add(a_interactableObject);
-//                            explodingObjects.add(object);
-//                        }
+                        object.collide(a_interactableObject);
                     }
                 }));
             }

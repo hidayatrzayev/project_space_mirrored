@@ -8,6 +8,7 @@ public class GameMain
 
     public GameMain() throws IOException, InterruptedException {
         GameFrame frame = new GameFrame();
+        SessionSystem.getInstance().startNewGame();
         frame.setVisible(true);
         gameWorld = new GameWorld();
         gameWorld.setGraphicSystem(frame.getPanel());

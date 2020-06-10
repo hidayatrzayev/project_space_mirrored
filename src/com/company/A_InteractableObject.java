@@ -22,7 +22,7 @@ public abstract class A_InteractableObject
 
     public abstract void update();
     public abstract void draw(Graphics gc);
-
+    public abstract void collide(A_InteractableObject a_interactableObject);
     public Rectangle getBounds()
     {
         return new Rectangle(posX, posY, sizeX - 5, sizeY - 5);

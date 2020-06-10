@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class GameWorld
@@ -20,16 +21,29 @@ public class GameWorld
 
     private GraphicSystem graphicSystem;
     private InputSystem inputSystem;
-
+    private SessionSystem sessionSystem;
+    private PhysicsSystem physicsSystem;
+    private List<List<A_InteractableObject>> worldObjects = new ArrayList<>();
+    private AsteroidHandler asteroidHandler;
+    private Universe universe;
     private Player player;
     private ArrayList<PlayerShot> shots;
+    private List<A_InteractableObject> players = new ArrayList<>();
+    private ArrayList<Shot> shots;
 
     public void setup() throws IOException
     {
+        sessionSystem = SessionSystem.getInstance();
+        universe = sessionSystem.getUniverse();
+        asteroidHandler = new AsteroidHandler(universe.getComplexity());
         img = ImageIO.read((getClass().getClassLoader().getResourceAsStream("resources/player_ship.png")));
-        player = new Player(100,480,0, 0, img);
+        player = new Player(100,480,img.getWidth(), img.getHeight(), img);
+        players.add(player);
+        worldObjects.add(asteroidHandler.getAsteroids());
+        worldObjects.add(players);
         inputSystem = new InputSystem();
         shots = new ArrayList();
+        physicsSystem = new PhysicsSystem(worldObjects);
 
         graphicSystem.addMouseMotionListener(new MouseAdapter() {
             @Override
@@ -71,8 +85,9 @@ public class GameWorld
             long updateLength = now - lastLoopTime;
             lastLoopTime = now;
             double delta = updateLength / ((double)OPTIMAL_TIME);
-
-            graphicSystem.draw();
+            graphicSystem.draw(universe);
+            asteroidHandler.updateAll();
+            asteroidHandler.drawAll(graphicSystem.getG());
             player.draw(graphicSystem.getG());
             for (int i = shots.size() - 1; i >=0 ; i--) {
                 PlayerShot shot = shots.get(i);
@@ -83,11 +98,14 @@ public class GameWorld
                 shot.update();
                 shot.draw(graphicSystem.getG());
             }
+            physicsSystem.checkCollisions();
             graphicSystem.getG().setColor(Color.RED);
             graphicSystem.getG().drawString((Integer.toString(player.posX)),  400, 400);
             graphicSystem.redraw();
             try {
-                Thread.sleep((lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000);
+                long timeout = (lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000;
+                if(timeout > 0)
+                Thread.sleep(timeout);
             } finally {
 
             } ;

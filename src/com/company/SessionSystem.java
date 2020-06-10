@@ -119,6 +119,12 @@ public class SessionSystem {
 
     }
 
+    public void nextLevel(){
+        this.currentLevel++;
+        this.universe = levels.get(String.valueOf(currentLevel));
+    }
+
+
     private Universe deserializeUniverse(JSONObject jsonObject){
         Deserializer deserializer = new UniverseDeserializer();
         return (Universe) deserializer.deserialize(jsonObject);
