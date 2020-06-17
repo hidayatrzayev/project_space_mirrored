@@ -76,7 +76,9 @@ public class GameWorld
             long updateLength = now - lastLoopTime;
             lastLoopTime = now;
             double delta = updateLength / ((double)OPTIMAL_TIME);
-            graphicSystem.draw(universe);
+            universe.update();
+            //graphicSystem.draw(universe);
+            universe.draw(graphicSystem.getG());
 
             enemyHandler.shootRandomly();
 
