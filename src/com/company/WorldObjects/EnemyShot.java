@@ -1,5 +1,6 @@
 package com.company.WorldObjects;
 
+import com.company.Services.CircleMesh;
 import com.company.Services.Utilities;
 
 import java.awt.image.BufferedImage;
@@ -9,6 +10,7 @@ public class EnemyShot extends PlayerShot {
 
     public EnemyShot(int posX, int posY, int sizeX, int sizeY, BufferedImage img) throws IOException {
         super(posX, posY, sizeX, sizeY, img);
+        this.mesh = new CircleMesh(10,10,25,25);
     }
 
     @Override

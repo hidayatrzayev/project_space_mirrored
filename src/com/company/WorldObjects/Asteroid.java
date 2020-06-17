@@ -1,5 +1,6 @@
 package com.company.WorldObjects;
 
+import com.company.Services.CircleMesh;
 import com.company.Services.Direction;
 
 import javax.imageio.ImageIO;
@@ -25,6 +26,7 @@ public class Asteroid extends A_InteractableObject{
         this.animations = getAnimations(50,50,2,10,img);
         this.lastAniationLoop = System.nanoTime();
         this.explosionAnimations = getAnimations(51,51,6,8,ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
+        this.mesh = new CircleMesh(3,3,38,38);
     }
 
     public int getSpeed() {
