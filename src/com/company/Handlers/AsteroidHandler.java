@@ -63,8 +63,8 @@ public class AsteroidHandler {
         }
     }
 
-    public void updateAll() throws IOException {
-        asteroids.forEach(A_InteractableObject::update);
+    public void updateAll(double elapsedTime) throws IOException {
+        asteroids.forEach((asteroid) -> asteroid.update(elapsedTime));
         for(int asteroid = 0; asteroid < asteroids.size(); asteroid++){
             if(asteroids.get(asteroid).getPosX() < 0 || asteroids.get(asteroid).getPosX() > Utilities.WIDTH | asteroids.get(asteroid).getPosY() > Utilities.HEIGHT || asteroids.get(asteroid).isDestroyed()){
                 asteroids.remove(asteroid);

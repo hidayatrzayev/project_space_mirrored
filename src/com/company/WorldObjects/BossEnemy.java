@@ -17,8 +17,8 @@ public class BossEnemy extends Enemy {
     }
 
     @Override
-    public void update() {
-        super.update();
+    public void update(double elapsedTime) {
+        super.update(elapsedTime);
         if (posY > Utilities.HEIGHT / 4 || (posY == 0 && direction < 0)) {
             this.direction *= -1;
         }

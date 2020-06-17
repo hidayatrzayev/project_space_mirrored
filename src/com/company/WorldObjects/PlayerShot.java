@@ -26,7 +26,7 @@ public class PlayerShot extends A_InteractableObject
     }
 
     @Override
-    public void update()
+    public void update(double elapsedTime)
     {
         if (!this.exploding) {
             if (animationStep >= ANIMATION_STEPS) {
