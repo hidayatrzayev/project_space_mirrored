@@ -21,7 +21,7 @@ public abstract class A_InteractableObject
         this.img = img;
     }
 
-    public abstract void update();
+    public abstract void update(double elapsedTime);
     public abstract void draw(Graphics gc);
     public abstract void collides(A_InteractableObject a_interactableObject);
     public Rectangle getBounds()

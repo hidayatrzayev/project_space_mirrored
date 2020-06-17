@@ -20,12 +20,14 @@ public class Player extends A_InteractableObject
         this.explosionAnimations = getAnimations(51,51,6,8,ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
     }
 
-    public void update()
+    @Override
+    public void update(double elapsedTime)
     {
         posX += velX;
         posY += velY;
     }
 
+    @Override
     public void draw(Graphics gc)
     {
         if(exploding)

@@ -64,7 +64,6 @@ public class GameWorld
 
     public void run() throws InterruptedException, IOException {
         enemyHandler.spawnEnemies(universe.getNumberOfEnemies());
-        enemyHandler.spawnBossEnemy();
         worldObjects.add(enemyHandler.getScreenEnemies());
         worldObjects.add(enemyHandler.getEnemyShots());
         while(true)
@@ -74,22 +73,18 @@ public class GameWorld
             // move this loop
             long now = System.nanoTime();
             long updateLength = now - lastLoopTime;
+            double elapsedTime = updateLength / 1_000_000_000.0;
             lastLoopTime = now;
             double delta = updateLength / ((double)OPTIMAL_TIME);
             graphicSystem.draw(universe);
 
-            enemyHandler.shootRandomly();
-
-            asteroidHandler.updateAll();
+            asteroidHandler.updateAll(elapsedTime);
             asteroidHandler.drawAll(graphicSystem.getG());
 
-            enemyHandler.updateEnemies();
-            enemyHandler.updateEnemyShots();
+            enemyHandler.updateAll(elapsedTime);
+            enemyHandler.drawAll(graphicSystem.getG());
 
-            enemyHandler.drawEnemies(graphicSystem.getG());
-            enemyHandler.drawEnemyShots(graphicSystem.getG());
-
-            player.update();
+            player.update(elapsedTime);
             player.draw(graphicSystem.getG());
             for (int i = shots.size() - 1; i >=0 ; i--) {
                 PlayerShot shot = (PlayerShot) shots.get(i);
@@ -97,7 +92,7 @@ public class GameWorld
                     shots.remove(i);
                     continue;
                 }
-                shot.update();
+                shot.update(elapsedTime);
                 shot.draw(graphicSystem.getG());
             }
             physicsSystem.checkCollisions();

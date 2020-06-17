@@ -38,7 +38,7 @@ public class Enemy extends A_InteractableObject {
     }
 
     @Override
-    public void update() {
+    public void update(double elapsedTime) {
         if (!exploding && !destroyed) {
             posY += (speed * direction);
         }

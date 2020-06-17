@@ -66,7 +66,7 @@ public class EnemyHandler {
     /**
      * Creates and adds the boss enemy to the screen.
      */
-    public void spawnBossEnemy() {
+    private void spawnBossEnemy() {
         BossEnemy bossEnemy = this.getBossEnemy();
         if (bossEnemy != null) {
             this.screenEnemies.add(bossEnemy);
@@ -98,25 +98,59 @@ public class EnemyHandler {
         return null;
     }
 
+    public void drawAll(Graphics gc) {
+        this.drawEnemies(gc);
+        this.drawEnemyShots(gc);
+    }
+
     /**
      * Draws all the enemies that are currently to be shown on the screen.
      *
      * @param gc - {@code Graphics} object that draws on the screen
      */
-    public void drawEnemies(Graphics gc) {
+    private void drawEnemies(Graphics gc) {
         for (A_InteractableObject enemy : this.screenEnemies) {
             enemy.draw(gc);
         }
+    }
+
+
+    /**
+     * Draws all enemy shots
+     */
+    private void drawEnemyShots(Graphics gc) {
+        for (A_InteractableObject shot : this.enemyShots) {
+            shot.draw(gc);
+        }
+    }
+
+    public void updateAll(double elapsedTime) {
+        if (this.screenEnemies.isEmpty() && this.enemies.isEmpty()) {
+            if (!bossFight) {
+                this.spawnBossEnemy();
+            } else {
+                return;
+            }
+        }
+
+        try {
+            this.shootRandomly();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        this.updateEnemies(elapsedTime);
+        this.updateEnemyShots(elapsedTime);
     }
 
     /**
      * Updates all currently rendered enemies on the screen, and if necessary
      * replaces the destroyed enemies with the new ones from the list of total enemies.
      */
-    public void updateEnemies() {
+    private void updateEnemies(double elapsedTime) {
         for (int i = 0; i < this.screenEnemies.size(); i++) {
             A_InteractableObject currentEnemy = this.screenEnemies.get(i);
-            currentEnemy.update();
+            currentEnemy.update(elapsedTime);
             if (currentEnemy.isDestroyed()) {
                 this.screenEnemies.remove(currentEnemy);
                 if (!enemies.isEmpty()) {
@@ -126,11 +160,25 @@ public class EnemyHandler {
         }
     }
 
+
+    /**
+     * Updates all enemy shots
+     */
+    public void updateEnemyShots(double elapsedTime) {
+        for (int i = this.enemyShots.size() - 1; i >= 0; i--) {
+            EnemyShot shot = (EnemyShot) this.enemyShots.get(i);
+            shot.update(elapsedTime);
+            if (shot.toRemove) {
+                this.enemyShots.remove(i);
+            }
+        }
+    }
+
     /**
      * Randomly selects an enemy from the list of enemies currently shown on the screen
      * and initiates a shot. The shot will appear with the probability of 5%.
      */
-    public void shootRandomly() throws IOException {
+    private void shootRandomly() throws IOException {
         Random random = new Random();
         float chance = random.nextFloat();
         if (chance > 0.95 && !this.screenEnemies.isEmpty()) {
@@ -141,40 +189,6 @@ public class EnemyHandler {
             }
         }
     }
-
-    /**
-     * Draws all enemy shots
-     */
-    public void drawEnemyShots(Graphics gc) {
-        for (A_InteractableObject shot : this.enemyShots) {
-            shot.draw(gc);
-        }
-    }
-
-    /**
-     * Updates all enemy shots
-     */
-    public void updateEnemyShots() {
-        for (int i = this.enemyShots.size() - 1; i >= 0; i--) {
-            EnemyShot shot = (EnemyShot) this.enemyShots.get(i);
-            shot.update();
-            if (shot.toRemove) {
-                this.enemyShots.remove(i);
-            }
-        }
-    }
-
-//    public void checkCollisions(List<PlayerShot> shots) {
-//        for (Enemy enemy : this.screenEnemies) {
-//            for (PlayerShot shot : shots) {
-//                if (enemy.collides(shot)) {
-//                    System.out.println("COLLISION!!!");
-//                    enemy.damage();
-//                    shot.toRemove = true;
-//                }
-//            }
-//        }
-//    }
 
     /**
      * Creates an enemy on a random location on the X axis and with a random image preset.

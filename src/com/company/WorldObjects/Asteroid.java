@@ -37,7 +37,7 @@ public class Asteroid extends A_InteractableObject{
 
 
     @Override
-    public void update() {
+    public void update(double elapsedTime) {
         if(!this.exploding) {
             if (this.direction == Direction.RIGHT) {
                 this.posX += this.speed;
