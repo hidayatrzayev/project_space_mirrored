@@ -12,6 +12,8 @@ public class Player extends A_InteractableObject
 
     private BufferedImage[] explosionAnimations;
     private int lastAttacker;
+    private double velX = 0;
+    private double velY = 0;
 
     public Player(int posX, int posY, int sizeX,int sizeY, BufferedImage img) throws IOException {
         super(posX, posY, sizeX, sizeY, img);
@@ -20,7 +22,8 @@ public class Player extends A_InteractableObject
 
     public void update()
     {
-
+        posX += velX;
+        posY += velY;
     }
 
     public void draw(Graphics gc)
@@ -51,11 +54,8 @@ public class Player extends A_InteractableObject
             }
         }
     }
-    /*
-        public Shot shoot() {
-            return new Shot(posX + 94 / 2 - Shot.size / 2, posY - Shot.size);
-        }
-     */
+
+
     public PlayerShot shoot() throws IOException {
         BufferedImage shot = ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/shot.png")));
         return new PlayerShot((posX + 94 / 2) - 26, posY - 20, shot.getWidth(), shot.getHeight(), shot);
@@ -69,4 +69,13 @@ public class Player extends A_InteractableObject
         this.posY = newPosY;
     }
 
+    public void setVelX(double velX)
+    {
+        this.velX = velX;
+    }
+
+    public void setVelY(double velY)
+    {
+        this.velY = velY;
+    }
 }

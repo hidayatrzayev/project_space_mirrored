@@ -25,6 +25,7 @@ public class GraphicSystem extends JPanel /*implements MouseMotionListener*/
         imageBuffer = graphicsConf.createCompatibleImage(
                 this.getWidth(), this.getHeight());
         graphics = imageBuffer.getGraphics();
+        this.setFocusable(true);
         //this.addMouseMotionListener(this);
     }
 
@@ -47,22 +48,7 @@ public class GraphicSystem extends JPanel /*implements MouseMotionListener*/
     {
         this.getGraphics().drawImage(imageBuffer, 0, 0, this);
     }
-/*
 
-    @Override
-    public void mouseDragged(MouseEvent e)
-    {
-        mosX = e.getX();
-        mosY = e.getY();
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e)
-    {
-        mosX = e.getX();
-        mosY = e.getY();
-    }
-*/
 
 
 }
