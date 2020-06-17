@@ -118,7 +118,9 @@ public class GameWorld
             double elapsedTime = updateLength / 1_000_000_000.0;
             lastLoopTime = now;
             double delta = updateLength / ((double)OPTIMAL_TIME);
-            graphicSystem.draw(universe);
+            universe.update();
+            //graphicSystem.draw(universe);
+            universe.draw(graphicSystem.getG());
 
             asteroidHandler.updateAll(elapsedTime);
             asteroidHandler.drawAll(graphicSystem.getG());
