@@ -2,11 +2,15 @@ package com.company.WorldObjects;
 
 import com.company.Services.ComplicatedMesh;
 import com.company.Services.Utilities;
+import com.company.Main.GameWorld;
+import com.company.Movements.MoveStrategy;
+import com.company.Shootings.ShootStrategy;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.List;
 
 import static com.company.Services.Utilities.getAnimations;
 
@@ -15,7 +19,10 @@ public class Enemy extends A_InteractableObject {
     protected int speed;
     protected int health;
     protected int direction;
-    protected int lastAttacker;
+    protected double shootingInterval = 1;
+    protected double intervalAccumulation = 0.0;
+    protected MoveStrategy moveStrategy;
+    protected ShootStrategy shootStrategy;
 
     /**
      * This constructor specifies the default health of 1 and is meant to be used to create regular enemies
@@ -42,10 +49,8 @@ public class Enemy extends A_InteractableObject {
     @Override
     public void update(double elapsedTime) {
         if (!exploding && !destroyed) {
-            posY += (speed * direction);
-        }
-        if (posY > Utilities.HEIGHT) {
-            destroyed = true;
+            moveStrategy.move(this, speed, elapsedTime);
+//            posY += (speed * direction);
         }
     }
 
@@ -72,15 +77,13 @@ public class Enemy extends A_InteractableObject {
      * Checks if this enemy collides with any other interactable object.
      *
      * @param other - other object to check the collision against
-     * @return {@code true} if two objects collide, otherwise {@code} false.
+     * @return {@code true} if two objects collide, otherwise {@code false}.
      */
+    @Override
     public void collides(A_InteractableObject other) {
         if(this.getBounds().intersects(other.getBounds())) {
             if (other instanceof  PlayerShot && !(other instanceof EnemyShot)) {
-                if (!other.isDestroyed() && lastAttacker != other.hashCode()) {
-                    this.damage();
-                    lastAttacker = other.hashCode();
-                }
+                this.damage();
             }
         }
     }
@@ -96,10 +99,34 @@ public class Enemy extends A_InteractableObject {
         }
     }
 
-    public EnemyShot shoot() throws IOException {
-        BufferedImage shot = ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/shot.png")));
-        return new EnemyShot((posX + img.getWidth() / 2) - 26, posY + img.getHeight() - 40,
-                shot.getWidth(), shot.getHeight(),
-                ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/shot.png"))));
+    public void shoot(List<A_InteractableObject> shots, double elapsedTime) throws IOException {
+        intervalAccumulation += elapsedTime;
+        if (intervalAccumulation >= shootingInterval) {
+            intervalAccumulation -= shootingInterval;
+            shootStrategy.shoot(this, shots);
+        }
+    }
+
+    public void setMoveStrategy(MoveStrategy moveStrategy) {
+        this.moveStrategy = moveStrategy;
+    }
+
+    public void setShootStrategy(ShootStrategy shootStrategy) {
+        this.shootStrategy = shootStrategy;
+    }
+
+    public double getShootingInterval() {
+        return shootingInterval;
+    }
+
+//    public boolean isTimeToShoot() {
+//        intervalAccumulation += GameWorld.getElapsedTime();
+//        return intervalAccumulation >= shootingInterval;
+//    }
+
+    public void setSpeed(int speed) {
+        if (speed > 0) {
+            this.speed = speed;
+        }
     }
 }

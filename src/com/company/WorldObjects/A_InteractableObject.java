@@ -14,6 +14,13 @@ public abstract class A_InteractableObject
     protected BufferedImage[] explosionAnimations;
     protected ObjectMesh mesh;
 
+    public A_InteractableObject(int posX, int posY, int sizeX, int sizeY) {
+        this.posX = posX;
+        this.posY = posY;
+        this.sizeX = sizeX;
+        this.sizeY = sizeY;
+    }
+
 
     public A_InteractableObject(int posX, int posY, int sizeX, int sizeY, BufferedImage img)
     {
