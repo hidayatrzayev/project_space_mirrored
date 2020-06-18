@@ -1,7 +1,6 @@
 package com.company.WorldObjects;
 
 import com.company.Services.CircleMesh;
-import com.company.Main.GameWorld;
 import com.company.Services.Utilities;
 import com.company.Shootings.ShootStrategy;
 
@@ -15,17 +14,17 @@ public class EnemyShot extends A_InteractableObject {
     private double velocityY;
     private boolean toRemove;
 
-    public EnemyShot(int posX, int posY, int sizeX, int sizeY, BufferedImage img) throws IOException {
-        super(posX, posY, sizeX, sizeY, img);
-        this.mesh = new CircleMesh(10, 10, 25, 25);
-    }
+//    public EnemyShot(int posX, int posY, int sizeX, int sizeY, BufferedImage img) throws IOException {
+//        super(posX, posY, sizeX, sizeY, img);
+//        this.mesh = new CircleMesh(10, 10, 25, 25);
+//    }
 
-    public EnemyShot(int posX, int posY, int sizeX, int sizeY, double velocityX, double velocityY) throws IOException {
+    public EnemyShot(int posX, int posY, int sizeX, int sizeY, double velocityX, double velocityY) {
         super(posX, posY, sizeX, sizeY);
         this.velocityX = velocityX;
         this.velocityY = velocityY;
         this.toRemove = false;
-        this.mesh = new CircleMesh(10, 10, ShootStrategy.SHOT_SIZE, ShootStrategy.SHOT_SIZE);
+        this.mesh = new CircleMesh(0, 0, ShootStrategy.SHOT_SIZE, ShootStrategy.SHOT_SIZE);
     }
 
     @Override
@@ -57,18 +56,16 @@ public class EnemyShot extends A_InteractableObject {
 
     @Override
     public void collides(A_InteractableObject a_interactableObject) {
-        if(this.getBounds().intersects(a_interactableObject.getBounds())) {
-            if (a_interactableObject instanceof Player || a_interactableObject instanceof Asteroid ) {
-                this.destroyed = true;
-                this.toRemove = true;
+        if (a_interactableObject instanceof Player || a_interactableObject instanceof Asteroid) {
+            if(Utilities.distance(this.posX, this.posY,
+                    a_interactableObject.getPosX(), a_interactableObject.getPosY()) < ShootStrategy.SHOT_SIZE * 4) {
+                if (this.getBounds().intersects(a_interactableObject.getBounds())) {
+                    this.destroyed = true;
+                    this.toRemove = true;
+                }
             }
         }
     }
-
-//    @Override
-//    public Rectangle getBounds() {
-//        return new Rectangle(posX, posY, sizeX, sizeY);
-//    }
 
     public boolean isToRemove() {
         return toRemove;
