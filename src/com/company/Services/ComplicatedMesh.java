@@ -55,17 +55,17 @@ public class ComplicatedMesh<T> implements ObjectMesh<T> {
 
     public static Area getOutline(BufferedImage image, Color color, boolean include, int tolerance) {
         Area area = new Area();
-        for (int x=0; x<image.getWidth(); x+=3) {
-            for (int y=0; y<image.getHeight(); y+=3) {
+        for (int x=0; x<image.getWidth(); x+=5) {
+            for (int y=0; y<image.getHeight(); y+=5) {
                 Color pixel = new Color(image.getRGB(x,y));
                 if (include) {
                     if (isIncluded(color, pixel, tolerance)) {
-                        Rectangle r = new Rectangle(x,y,3,3);
+                        Rectangle r = new Rectangle(x,y,5,5);
                         area.add(new Area(r));
                     }
                 } else {
                     if (!isIncluded(color, pixel, tolerance)) {
-                        Rectangle r = new Rectangle(x,y,3,3);
+                        Rectangle r = new Rectangle(x,y,5,5);
                         area.add(new Area(r));
                     }
                 }
