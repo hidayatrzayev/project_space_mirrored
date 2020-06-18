@@ -1,42 +1,24 @@
 package com.company.Systems;
 
 import com.company.WorldObjects.*;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 public class PhysicsSystem {
 
-    private List<A_InteractableObject> checkedObjects = Collections.synchronizedList(new ArrayList<>());
     private List<List<A_InteractableObject>> worldObjects;
-    private static int MAX_T;
-    private  ExecutorService pool;
-    private List<Runnable> tasks = new ArrayList<Runnable>();
-    public PhysicsSystem(List<List<A_InteractableObject>> worldObjects) {
 
+    public PhysicsSystem(List<List<A_InteractableObject>> worldObjects) {
         this.worldObjects = worldObjects;
-        MAX_T = worldObjects.size();
-        pool = Executors.newFixedThreadPool(MAX_T);
     }
 
     public void checkCollisions(){
         for (int a_interactableObjects = 0; a_interactableObjects  < worldObjects.size(); a_interactableObjects++) {
             for (int a_interactableObject = 0; a_interactableObject < worldObjects.get(a_interactableObjects).size(); a_interactableObject++) {
-                checkedObjects.add(worldObjects.get(a_interactableObjects).get(a_interactableObject));
                 for (int worldObjectList = 0; worldObjectList < worldObjects.size(); worldObjectList++) {
-                    if (!worldObjects.get(worldObjectList).equals(a_interactableObjects)) {
                         for (int worldObject = 0; worldObject < worldObjects.get(worldObjectList).size(); worldObject++) {
-//                            if (!checkedObjects.contains(worldObjects.get(worldObjectList).get(worldObject))) {
-                                worldObjects.get(a_interactableObjects).get(a_interactableObject).collides(worldObjects.get(worldObjectList).get(worldObject));
-                                worldObjects.get(worldObjectList).get(worldObject).collides(worldObjects.get(a_interactableObjects).get(a_interactableObject));
-                                checkedObjects.add(worldObjects.get(worldObjectList).get(worldObject));
-//                            }
+                            worldObjects.get(a_interactableObjects).get(a_interactableObject).collides(worldObjects.get(worldObjectList).get(worldObject));
                         }
-                    }
                 }
             }
 
@@ -62,7 +44,6 @@ public class PhysicsSystem {
 //        tasks.forEach(runnable -> pool.execute(runnable));
 ////        pool.shutdown();
 //    }
-
 //    private class Task implements Runnable {
 //
 //        private List<List<A_InteractableObject>> worldObjects;
