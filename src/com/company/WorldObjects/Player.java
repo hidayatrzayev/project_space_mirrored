@@ -1,5 +1,7 @@
 package com.company.WorldObjects;
 
+import com.company.Services.ComplicatedMesh;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -18,6 +20,7 @@ public class Player extends A_InteractableObject
     public Player(int posX, int posY, int sizeX,int sizeY, BufferedImage img) throws IOException {
         super(posX, posY, sizeX, sizeY, img);
         this.explosionAnimations = getAnimations(51,51,6,8,ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
+        this.mesh = new ComplicatedMesh(img);
     }
 
     @Override
@@ -48,7 +51,7 @@ public class Player extends A_InteractableObject
     @Override
     public void collides(A_InteractableObject a_interactableObject) {
         if(this.getBounds().intersects(a_interactableObject.getBounds())) {
-            if (a_interactableObject instanceof Asteroid || a_interactableObject instanceof EnemyShot) {
+            if (a_interactableObject instanceof Asteroid || a_interactableObject instanceof EnemyShot || a_interactableObject instanceof  Enemy) {
                 if (!a_interactableObject.isDestroyed() && this.lastAttacker != a_interactableObject.hashCode()) {
                     this.exploding = true;
                     this.lastAttacker = a_interactableObject.hashCode();

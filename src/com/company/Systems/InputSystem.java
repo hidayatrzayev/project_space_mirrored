@@ -11,11 +11,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class InputSystem
 {
-    private static final AtomicBoolean canShoot = new AtomicBoolean(true);
+    private final AtomicBoolean canShoot = new AtomicBoolean(true);
 
 
 
-    public static void configureInput(GraphicSystem graphicSystem, Player player, int playerSpeed, ArrayList<A_InteractableObject> shots)
+    public void configureInput(GraphicSystem graphicSystem, Player player, int playerSpeed, ArrayList<A_InteractableObject> shots)
     {
 
 
@@ -39,7 +39,7 @@ public class InputSystem
                 //Regular shot
                 if(key == KeyEvent.VK_W) {
                     //Prevent from shooting multiple times if the key is held down
-                    if (canShoot.compareAndSet(true, false)) {
+                    if (true) {
                         if (shots.size() < 20) {
                             try {
                                 shots.add(player.shoot());

@@ -9,12 +9,12 @@
     "id": "be2",
     "health": 10,
     "speed": 2,
-    "preset":  ""
+    "preset": "BossEnemies/be1.png"
   },
   {
     "id": "be3",
     "health": 15,
     "speed": 3,
-    "preset": ""
+    "preset": "BossEnemies/be1.png"
   }
 ]

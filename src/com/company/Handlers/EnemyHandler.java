@@ -39,6 +39,8 @@ public class EnemyHandler {
     private List<A_InteractableObject> enemyShots;
     private String bossEnemyId;
     private boolean bossFight;
+    private BossEnemy bossEnemy;
+
 
     public EnemyHandler(int complexity, String bossEnemyId) throws IOException {
         this.complexity = complexity;
@@ -47,6 +49,7 @@ public class EnemyHandler {
         this.screenEnemies = new ArrayList<>();
         this.enemyShots = new ArrayList<>();
         this.bossFight = false;
+        this.bossEnemy = this.getBossEnemy();
     }
 
     /**
@@ -67,7 +70,7 @@ public class EnemyHandler {
      * Creates and adds the boss enemy to the screen.
      */
     private void spawnBossEnemy() {
-        BossEnemy bossEnemy = this.getBossEnemy();
+
         if (bossEnemy != null) {
             this.screenEnemies.add(bossEnemy);
             this.bossFight = true;
@@ -229,4 +232,5 @@ public class EnemyHandler {
         return this.enemyShots;
     }
 
+    public boolean fightIsOver(){return this.screenEnemies.isEmpty() && this.enemies.isEmpty() && isBossFight();}
 }

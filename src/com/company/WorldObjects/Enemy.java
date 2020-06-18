@@ -1,5 +1,6 @@
 package com.company.WorldObjects;
 
+import com.company.Services.ComplicatedMesh;
 import com.company.Services.Utilities;
 
 import javax.imageio.ImageIO;
@@ -25,6 +26,7 @@ public class Enemy extends A_InteractableObject {
         this.health = 1;
         this.direction = 1;
         this.explosionAnimations = getAnimations(51,51,6,8,ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
+        this.mesh = new ComplicatedMesh(img);
     }
 
     /**
