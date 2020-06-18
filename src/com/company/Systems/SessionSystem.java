@@ -70,6 +70,7 @@ public class SessionSystem {
         this.playerState = playerState;
     }
 
+    public int getNumberOfLevels(){return this.levels.size();}
     @Override
     public String toString() {
         return "{" +

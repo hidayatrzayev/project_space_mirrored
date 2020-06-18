@@ -13,6 +13,8 @@ import com.company.WorldObjects.PlayerShot;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,6 +40,7 @@ public class GameWorld
     private ArrayList<A_InteractableObject> enemies;
     private List<A_InteractableObject> players = new ArrayList<>();
     private EnemyHandler enemyHandler;
+    private boolean isPaused = false;
 
 
     public void setup() throws IOException
@@ -55,19 +58,58 @@ public class GameWorld
         shots = new ArrayList();
         worldObjects.add(shots);
         physicsSystem = new PhysicsSystem(worldObjects);
-        int playerSpeed = 7;
+        int playerSpeed = 7 * (Utilities.WIDTH/1280);
 
         inputSystem.configureInput(graphicSystem, player, playerSpeed, shots);
 
-
+        graphicSystem.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+               super.keyPressed(e);
+                int key = e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == KeyEvent.VK_ESCAPE ? e.getKeyCode(): 0;
+                    if (key == KeyEvent.VK_SPACE){
+                       if (isPaused == false) {
+                           isPaused = true;
+                       }else
+                        {
+                           isPaused = false;
+                       }
+                }else if(isPaused && key == KeyEvent.VK_ESCAPE) {
+                        System.exit(0);
+                    }
+            }
+        });
     }
 
     public void run() throws InterruptedException, IOException {
         enemyHandler.spawnEnemies(universe.getNumberOfEnemies());
         worldObjects.add(enemyHandler.getScreenEnemies());
         worldObjects.add(enemyHandler.getEnemyShots());
-        while(true)
+        while(!enemyHandler.fightIsOver())
         {
+            if (isPaused){
+                while (isPaused){
+                    graphicSystem.getG().setColor(Color.BLACK);
+                    graphicSystem.getG().fillRect(0,0,Utilities.WIDTH,Utilities.HEIGHT);
+                    graphicSystem.draw(universe);
+                    asteroidHandler.drawAll(graphicSystem.getG());
+                    enemyHandler.drawAll(graphicSystem.getG());
+                    player.draw(graphicSystem.getG());
+
+                    for (int i = shots.size() - 1; i >=0 ; i--) {
+                        PlayerShot shot = (PlayerShot) shots.get(i);
+                        shot.draw(graphicSystem.getG());
+                    }
+                    Image background = ImageIO.read((getClass().getClassLoader().getResourceAsStream("Data/background.png")));
+                    graphicSystem.getG().drawImage(background.getScaledInstance(Utilities.WIDTH,Utilities.HEIGHT, Image.SCALE_SMOOTH),0,0, null);
+                    Image image = ImageIO.read((getClass().getClassLoader().getResourceAsStream("Data/Pause.png")));
+                    graphicSystem.getG().drawImage(image,(Utilities.WIDTH/2) - ((BufferedImage) image).getWidth()/2,Utilities.HEIGHT/2 - ((BufferedImage) image).getHeight()/2 , null);
+                    graphicSystem.redraw();
+
+
+
+                }
+            }
             // work out how long its been since the last update, this
             // will be used to calculate how far the entities should
             // move this loop
@@ -101,14 +143,14 @@ public class GameWorld
             graphicSystem.getG().drawString("Position X: " + (Integer.toString(player.getPosX())),  10, 20);
             graphicSystem.getG().drawString("Position Y: " + (Integer.toString(player.getPosY())),  10, 45);
             graphicSystem.redraw();
-
             try {
                 long timeout = (lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000;
                 if(timeout > 0)
                 Thread.sleep(timeout);
             } finally {
-
-            } ;
+                SessionSystem.getInstance().setPlayerState(player);
+                //TODO
+            }
         }
     }
 

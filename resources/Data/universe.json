@@ -3,21 +3,21 @@
     "level": "1",
     "backgroundPath": "Levels/level1.jpg",
     "complexity": "1",
-    "numberOfEnemies": "100",
+    "numberOfEnemies": "10",
     "bossEnemy": "be1"
   },
   {
     "level": "2",
     "backgroundPath": "Levels/level2.jpg",
     "complexity": "2",
-    "numberOfEnemies": "200",
+    "numberOfEnemies": "20",
     "bossEnemy": "be2"
   },
   {
     "level": "3",
     "backgroundPath": "Levels/level3.jpg",
     "complexity": "3",
-    "numberOfEnemies": "300",
+    "numberOfEnemies": "30",
     "bossEnemy": "be3"
   }
 ]

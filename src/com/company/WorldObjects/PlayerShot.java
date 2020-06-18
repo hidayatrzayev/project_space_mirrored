@@ -72,4 +72,8 @@ public class PlayerShot extends A_InteractableObject
     }
 
 
+    public boolean isExploding(){
+        return exploding;
+    }
+
 }
