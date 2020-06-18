@@ -15,9 +15,10 @@ public class PhysicsSystem {
     public void checkCollisions(){
         for (int a_interactableObjects = 0; a_interactableObjects  < worldObjects.size(); a_interactableObjects++) {
             for (int a_interactableObject = 0; a_interactableObject < worldObjects.get(a_interactableObjects).size(); a_interactableObject++) {
-                for (int worldObjectList = 0; worldObjectList < worldObjects.size(); worldObjectList++) {
+                for (int worldObjectList = a_interactableObjects; worldObjectList < worldObjects.size(); worldObjectList++) {
                         for (int worldObject = 0; worldObject < worldObjects.get(worldObjectList).size(); worldObject++) {
                             worldObjects.get(a_interactableObjects).get(a_interactableObject).collides(worldObjects.get(worldObjectList).get(worldObject));
+                            worldObjects.get(worldObjectList).get(worldObject).collides(worldObjects.get(a_interactableObjects).get(a_interactableObject));
                         }
                 }
             }
