@@ -144,6 +144,7 @@ public class GameWorld
             graphicSystem.getG().setColor(Color.WHITE);
             graphicSystem.getG().drawString("Position X: " + (Integer.toString(player.getPosX())),  10, 20);
             graphicSystem.getG().drawString("Position Y: " + (Integer.toString(player.getPosY())),  10, 45);
+            graphicSystem.getG().drawString("Current height: " + (Integer.toString(universe.currentHeight)),  10, 60);
             graphicSystem.redraw();
             try {
                 long timeout = (lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000;

@@ -6,7 +6,9 @@ import com.company.WorldObjects.Star;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.Buffer;
 import java.util.ArrayList;
 
 public class Universe {
@@ -14,12 +16,23 @@ public class Universe {
     private int posX, posY = 0;
     private int level;
     private String backgroundPath;
-    private Image background;
+    private BufferedImage background;
     private int complexity;
     private int numberOfEnemies;
     private String bossEnemy;
 
+    //TODO:change back to private
+    public int currentHeight = 0;
+    public int tempIntUW = 0;
+    public int tempIntLW = 0;
+
+
+
+    public int ny = 0 ;
+    public int ny2 = 1000;
+
     private int scrollSpeed = 1;
+    private int scrollSpeedBackground = 5;
 
     private ArrayList<Star> stars = new ArrayList<>();
 
@@ -31,7 +44,7 @@ public class Universe {
         this.bossEnemy = bossEnemy;
         this.background = ImageIO.read((getClass().getClassLoader().getResourceAsStream(backgroundPath)))/*.getScaledInstance(Utilities.WIDTH, Utilities.HEIGHT, Image.SCALE_DEFAULT/*, Image.SCALE_SMOOTH)*/;
 
-        for(int i = 0; i < 500; i++)
+        for(int i = 0; i < 400; i++)
         {
            Star s = new Star(Utilities.random.nextInt(Utilities.WIDTH), Utilities.random.nextInt(Utilities.HEIGHT));
            stars.add(s);
@@ -46,7 +59,7 @@ public class Universe {
         for (int i = 0; i < stars.size(); i++)
         {
             Star s = stars.get(i);
-            s.posY += scrollSpeed * (i > 100 ? 1 : 1);
+            s.posY += scrollSpeed * (i > 200 ? 1 : 2);
             if (s.posY >= Utilities.HEIGHT)
             {
                 s.setPos(Utilities.random.nextInt(Utilities.WIDTH), 0);
@@ -57,13 +70,42 @@ public class Universe {
     }
 
     public void draw(Graphics gc) {
+        currentHeight += 1;
         gc.drawImage(background, posX, posY,null);
 
-        //gc.drawImage(backgroun)
+/*
+        tempIntUW += scrollSpeedBackground;
+        tempIntLW++;
+        int yPosition = -background.getHeight()+ tempIntUW;
+        ny = ny + scrollSpeedBackground;
+        ny2 = ny2 + scrollSpeedBackground;
+
+        if(yPosition > 0)
+            tempIntUW = 0;
+        */
+/*
+        if(yPosition <= 0)
+            ny2 = 1000;
+            yPosition = background.getHeight();*/
+        //if(yPosition <= 1000)
+            //ny = 0;
+        //int yPositionLW = background.getHeight()-500 - tempIntLW;
+
+
+        //gc.drawImage(background.getSubimage(0, background.getHeight()-ny2, Utilities.WIDTH, Utilities.HEIGHT), 0, 0, null);
+        //gc.drawImage(background, 0, background.getHeight(), null);
+        //gc.drawImage(background, 0, yPosition, null);
+        //if(yPosition <= 1000)
+            //gc.drawImage(background.getSubimage(0, background.getHeight()-ny, Utilities.WIDTH, Utilities.HEIGHT), 0, 0, null);
+
+        //gc.drawImage(background.getSubimage(0, yPositionLW, Utilities.WIDTH, Utilities.HEIGHT/2), 0, 500, null);
+
+
+
         for (int i = 0; i < stars.size(); i++)
         {
             Star s = stars.get(i);
-            gc.setColor((i > 100 ?Color.WHITE : Color.LIGHT_GRAY));
+            gc.setColor((i > 200 ? Color.LIGHT_GRAY : Color.DARK_GRAY));
             gc.drawRect(s.posX, s.posY, 1, 1);
         }
     }
@@ -108,7 +150,7 @@ public class Universe {
         return background;
     }
 
-    public void setBackground(Image background) {
+    public void setBackground(BufferedImage background) {
         this.background = background;
     }
 
