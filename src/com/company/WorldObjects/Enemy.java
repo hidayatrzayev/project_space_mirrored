@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.company.Services.Utilities.getAnimations;
@@ -23,6 +24,7 @@ public class Enemy extends A_InteractableObject {
     protected double intervalAccumulation = 0.0;
     protected MoveStrategy moveStrategy;
     protected ShootStrategy shootStrategy;
+    protected List<A_InteractableObject> lastAttacker;
 
     /**
      * This constructor specifies the default health of 1 and is meant to be used to create regular enemies
@@ -34,6 +36,7 @@ public class Enemy extends A_InteractableObject {
         this.direction = 1;
         this.explosionAnimations = getAnimations(51,51,6,8,ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
         this.mesh = new ComplicatedMesh(img);
+        this.lastAttacker = new ArrayList<>();
     }
 
     /**
@@ -44,6 +47,7 @@ public class Enemy extends A_InteractableObject {
         this.speed = speed;
         this.health = health;
         this.direction = 1;
+        this.lastAttacker = new ArrayList<>();
     }
 
     @Override
@@ -80,9 +84,12 @@ public class Enemy extends A_InteractableObject {
      */
     @Override
     public void collides(A_InteractableObject other) {
-        if(this.getBounds().intersects(other.getBounds())) {
-            if (other instanceof PlayerShot) {
-                this.damage();
+        if (other instanceof PlayerShot && !(other instanceof EnemyShot) || other instanceof Player) {
+            if (this.getBounds().intersects(other.getBounds())) {
+                if (!this.lastAttacker.contains(other)) {
+                    this.damage();
+                    this.lastAttacker.add(other);
+                }
             }
         }
     }

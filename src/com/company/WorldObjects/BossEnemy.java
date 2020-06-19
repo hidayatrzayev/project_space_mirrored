@@ -11,8 +11,6 @@ import static com.company.Services.Utilities.getAnimations;
 
 public class BossEnemy extends Enemy {
 
-    private int lastAttacker;
-
     public BossEnemy(int posX, int posY, int sizeX, int sizeY, BufferedImage img, int speed, int health) throws IOException {
         super(posX, posY, sizeX, sizeY, img, speed, health);
         this.explosionAnimations = getAnimations(51,51,6,8,ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
@@ -24,18 +22,6 @@ public class BossEnemy extends Enemy {
         super.update(elapsedTime);
         if (posY > Utilities.HEIGHT / 4 || (posY == 0 && direction < 0)) {
             this.direction *= -1;
-        }
-    }
-
-    @Override
-    public void collides(A_InteractableObject other) {
-        if(this.getBounds().intersects(other.getBounds())) {
-            if (other instanceof  PlayerShot) {
-                if (!other.isDestroyed() && lastAttacker != other.hashCode()) {
-                    this.damage();
-                    lastAttacker = other.hashCode();
-                }
-            }
         }
     }
 }

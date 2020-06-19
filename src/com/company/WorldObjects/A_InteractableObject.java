@@ -99,4 +99,12 @@ public abstract class A_InteractableObject
     public void setExplosionStep(int explosionStep) {
         this.explosionStep = explosionStep;
     }
+
+    public int getMaxSize(){
+        if (img.getWidth() > img.getHeight()){
+            return img.getWidth();
+        }else {
+            return img.getHeight();
+        }
+    }
 }
