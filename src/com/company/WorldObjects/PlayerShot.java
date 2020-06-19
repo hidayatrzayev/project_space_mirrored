@@ -64,14 +64,11 @@ public class PlayerShot extends A_InteractableObject
 
     @Override
     public void collides(A_InteractableObject a_interactableObject) {
-        if (this.equals(a_interactableObject) || a_interactableObject.isDestroyed()){return;}
-        if (Utilities.distance(this.posX + this.sizeX/2, this.posY + this.sizeY/2, a_interactableObject.posX + a_interactableObject.getSizeX()/2 , a_interactableObject.getPosY() + a_interactableObject.getSizeY()/2) < Utilities.hypotenuse(a_interactableObject.getMaxSize(), this.getMaxSize())) {
             if (a_interactableObject instanceof Enemy || a_interactableObject instanceof Asteroid) {
                 if (this.getBounds().intersects(a_interactableObject.getBounds())) {
                         this.exploding = true;
                 }
             }
-        }
     }
 
 

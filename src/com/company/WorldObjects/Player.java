@@ -7,6 +7,8 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.company.Services.Utilities.getAnimations;
 
@@ -15,7 +17,7 @@ public class Player extends A_InteractableObject
 {
 
     private BufferedImage[] explosionAnimations;
-    private int lastAttacker;
+    private List<A_InteractableObject> lastAttacker;
     private double velX = 0;
     private double velY = 0;
 
@@ -23,6 +25,7 @@ public class Player extends A_InteractableObject
         super(posX, posY, sizeX, sizeY, img);
         this.explosionAnimations = getAnimations(51,51,6,8,ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
         this.mesh = new ComplicatedMesh(img);
+        this.lastAttacker = new ArrayList<>();
     }
 
     @Override
@@ -52,17 +55,14 @@ public class Player extends A_InteractableObject
 
     @Override
     public void collides(A_InteractableObject a_interactableObject) {
-        if (this.equals(a_interactableObject) || a_interactableObject.isDestroyed()){return;}
-        if (Utilities.distance(this.posX + this.sizeX/2, this.posY + this.sizeY/2, a_interactableObject.posX + a_interactableObject.getSizeX()/2 , a_interactableObject.getPosY() + a_interactableObject.getSizeY()/2) < Utilities.hypotenuse(a_interactableObject.getMaxSize(), this.getMaxSize())) {
             if (a_interactableObject instanceof Asteroid || a_interactableObject instanceof EnemyShot || a_interactableObject instanceof Enemy) {
                 if (this.getBounds().intersects(a_interactableObject.getBounds())) {
-                    if (!a_interactableObject.isDestroyed() && this.lastAttacker != a_interactableObject.hashCode()) {
+                    if (!this.lastAttacker.contains(a_interactableObject)) {
                         this.exploding = true;
-                        this.lastAttacker = a_interactableObject.hashCode();
+                        this.lastAttacker.add(a_interactableObject);
                     }
                 }
             }
-        }
     }
 
 

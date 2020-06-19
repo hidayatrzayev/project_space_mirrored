@@ -7,6 +7,8 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.company.Services.Utilities.getAnimations;
 import static java.lang.Integer.max;
@@ -16,7 +18,7 @@ public class Enemy extends A_InteractableObject {
     protected int speed;
     protected int health;
     protected int direction;
-    protected int lastAttacker;
+    protected List<A_InteractableObject> lastAttacker;
 
     /**
      * This constructor specifies the default health of 1 and is meant to be used to create regular enemies
@@ -28,6 +30,7 @@ public class Enemy extends A_InteractableObject {
         this.direction = 1;
         this.explosionAnimations = getAnimations(51,51,6,8,ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
         this.mesh = new ComplicatedMesh(img);
+        this.lastAttacker = new ArrayList<>();
     }
 
     /**
@@ -38,6 +41,7 @@ public class Enemy extends A_InteractableObject {
         this.speed = speed;
         this.health = health;
         this.direction = 1;
+        this.lastAttacker = new ArrayList<>();
     }
 
     @Override
@@ -76,17 +80,14 @@ public class Enemy extends A_InteractableObject {
      * @return {@code true} if two objects collide, otherwise {@code} false.
      */
     public void collides(A_InteractableObject other) {
-        if (this.equals(other) || other.isDestroyed()){return;}
-        if (Utilities.distance(this.posX + this.sizeX/2, this.posY + this.sizeY/2, other.posX + other.getSizeX()/2 , other.getPosY() + other.getSizeY()/2) < Utilities.hypotenuse(other.getMaxSize(), this.getMaxSize())) {
             if (other instanceof PlayerShot && !(other instanceof EnemyShot) || other instanceof Player) {
                 if (this.getBounds().intersects(other.getBounds())) {
-                    if (!other.isDestroyed() && lastAttacker != other.hashCode()) {
+                    if (!this.lastAttacker.contains(other)) {
                         this.damage();
-                        lastAttacker = other.hashCode();
+                        this.lastAttacker.add(other);
                     }
                 }
             }
-        }
     }
 
     /**
