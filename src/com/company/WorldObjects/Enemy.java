@@ -76,7 +76,7 @@ public class Enemy extends A_InteractableObject {
      * @return {@code true} if two objects collide, otherwise {@code} false.
      */
     public void collides(A_InteractableObject other) {
-        if (this.equals(other)){return;}
+        if (this.equals(other) || other.isDestroyed()){return;}
         if (Utilities.distance(this.posX + this.sizeX/2, this.posY + this.sizeY/2, other.posX + other.getSizeX()/2 , other.getPosY() + other.getSizeY()/2) < Utilities.hypotenuse(other.getMaxSize(), this.getMaxSize())) {
             if (other instanceof PlayerShot && !(other instanceof EnemyShot) || other instanceof Player) {
                 if (this.getBounds().intersects(other.getBounds())) {
