@@ -5,19 +5,12 @@ import com.company.Services.Utilities;
 import com.company.Shootings.ShootStrategy;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 public class EnemyShot extends A_InteractableObject {
 
     private double velocityX;
     private double velocityY;
     private boolean toRemove;
-
-//    public EnemyShot(int posX, int posY, int sizeX, int sizeY, BufferedImage img) throws IOException {
-//        super(posX, posY, sizeX, sizeY, img);
-//        this.mesh = new CircleMesh(10, 10, 25, 25);
-//    }
 
     public EnemyShot(int posX, int posY, int sizeX, int sizeY, double velocityX, double velocityY) {
         super(posX, posY, sizeX, sizeY);
@@ -30,9 +23,13 @@ public class EnemyShot extends A_InteractableObject {
     @Override
     public void update(double elapsedTime) {
         if (!this.exploding) {
-            posX += velocityX * elapsedTime;
-            posY += velocityY * elapsedTime;
-            if (posY > Utilities.HEIGHT) {
+            if (velocityX == 0) {
+                posY += velocityY;
+            } else {
+                posX += velocityX * elapsedTime;
+                posY += velocityY * elapsedTime;
+            }
+            if (this.isOutVertically() || this.isOutHorizontally()) {
                 toRemove = true;
             }
         }
@@ -65,6 +62,14 @@ public class EnemyShot extends A_InteractableObject {
                 }
             }
         }
+    }
+
+    private boolean isOutVertically() {
+        return this.posY < 0 || this.posY > Utilities.HEIGHT;
+    }
+
+    private boolean isOutHorizontally() {
+        return this.posX < 0 || this.posX > Utilities.WIDTH;
     }
 
     public boolean isToRemove() {

@@ -27,7 +27,7 @@ import java.util.List;
 
 public class EnemyHandler {
 
-    public static final int MAX_SCREEN_ENEMIES = 2;
+    public static final int MAX_SCREEN_ENEMIES = 1;
 
     private final List<BufferedImage> presets = new ArrayList<>(
             Arrays.asList(
@@ -40,19 +40,18 @@ public class EnemyHandler {
 
     private final List<MoveStrategy> movementPatterns = new ArrayList<>(
             Arrays.asList(
-//                    new MoveStraightSlow(),
                     new MoveStraightNormal(),
-                    new MoveSinusoidNarrow()
-//                    new MoveSinusoidWide()
-//                    new MoveCircular()
+                    new MoveSinusoidNarrow(),
+                    new MoveSinusoidWide(),
+                    new MoveCircular()
             )
     );
 
     private final List<ShootStrategy> shootingPatterns = new ArrayList<>(
             Arrays.asList(
                     new ShootStraight(),
-                    new ShootCircle()
-//                    new ShootDeathSpiral()
+                    new ShootCircle(),
+                    new ShootDeathSpiral()
             )
     );
 
@@ -93,9 +92,9 @@ public class EnemyHandler {
      * Creates and adds the boss enemy to the screen.
      */
     private void spawnBossEnemy() {
-
         if (bossEnemy != null) {
-            bossEnemy.setMoveStrategy(new MoveStraightSlow());
+            bossEnemy.setMoveStrategy(new MoveStraightNormal());
+            bossEnemy.setShootStrategy(new ShootCircle());
             this.screenEnemies.add(bossEnemy);
             this.bossFight = true;
         }
@@ -175,12 +174,7 @@ public class EnemyHandler {
             }
         }
 
-        try {
-            this.shootAll(elapsedTime);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        this.shootAll(elapsedTime);
         this.updateEnemies(elapsedTime);
         this.updateEnemyShots(elapsedTime);
     }
@@ -221,7 +215,7 @@ public class EnemyHandler {
      * Randomly selects an enemy from the list of enemies currently shown on the screen
      * and initiates a shot. The shot will appear with the probability of 5%.
      */
-    private void shootAll(double elapsedTime) throws IOException {
+    private void shootAll(double elapsedTime) {
         for (int i = 0; i < screenEnemies.size(); i++) {
             Enemy randomEnemy = (Enemy) screenEnemies.get(i);
             if (!randomEnemy.isExploding()) {
@@ -243,7 +237,7 @@ public class EnemyHandler {
                 enemyShipImage, 2);
 
         MoveStrategy randomMoveStrategy = movementPatterns.get(random.nextInt(movementPatterns.size()));
-        ShootStrategy shootStrategy = shootingPatterns.get(1);
+        ShootStrategy shootStrategy = shootingPatterns.get(random.nextInt(shootingPatterns.size()));
         randomEnemy.setMoveStrategy(randomMoveStrategy);
         randomEnemy.setShootStrategy(shootStrategy);
         if (randomMoveStrategy instanceof MoveCircular) {

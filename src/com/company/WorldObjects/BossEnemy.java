@@ -30,7 +30,7 @@ public class BossEnemy extends Enemy {
     @Override
     public void collides(A_InteractableObject other) {
         if(this.getBounds().intersects(other.getBounds())) {
-            if (other instanceof  PlayerShot && !(other instanceof EnemyShot)) {
+            if (other instanceof  PlayerShot) {
                 if (!other.isDestroyed() && lastAttacker != other.hashCode()) {
                     this.damage();
                     lastAttacker = other.hashCode();

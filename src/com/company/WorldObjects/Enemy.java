@@ -1,9 +1,9 @@
 package com.company.WorldObjects;
 
 import com.company.Services.ComplicatedMesh;
-import com.company.Services.Utilities;
-import com.company.Main.GameWorld;
 import com.company.Movements.MoveStrategy;
+import com.company.Shootings.ShootCircle;
+import com.company.Shootings.ShootStraight;
 import com.company.Shootings.ShootStrategy;
 
 import javax.imageio.ImageIO;
@@ -19,7 +19,7 @@ public class Enemy extends A_InteractableObject {
     protected int speed;
     protected int health;
     protected int direction;
-    protected double shootingInterval = 1;
+    protected double shootingInterval;
     protected double intervalAccumulation = 0.0;
     protected MoveStrategy moveStrategy;
     protected ShootStrategy shootStrategy;
@@ -50,7 +50,6 @@ public class Enemy extends A_InteractableObject {
     public void update(double elapsedTime) {
         if (!exploding && !destroyed) {
             moveStrategy.move(this, speed, elapsedTime);
-//            posY += (speed * direction);
         }
     }
 
@@ -82,7 +81,7 @@ public class Enemy extends A_InteractableObject {
     @Override
     public void collides(A_InteractableObject other) {
         if(this.getBounds().intersects(other.getBounds())) {
-            if (other instanceof  PlayerShot && !(other instanceof EnemyShot)) {
+            if (other instanceof PlayerShot) {
                 this.damage();
             }
         }
@@ -99,11 +98,18 @@ public class Enemy extends A_InteractableObject {
         }
     }
 
-    public void shoot(List<A_InteractableObject> shots, double elapsedTime) throws IOException {
-        intervalAccumulation += elapsedTime;
-        if (intervalAccumulation >= shootingInterval) {
+    public void shoot(List<A_InteractableObject> shots, double elapsedTime) {
+        if (this.isTimeToShoot(elapsedTime)) {
             intervalAccumulation -= shootingInterval;
             shootStrategy.shoot(this, shots);
+        }
+    }
+
+    private void setShootingInterval() {
+        if (shootStrategy instanceof ShootStraight || shootStrategy instanceof ShootCircle) {
+            this.shootingInterval = 1;
+        } else {
+            this.shootingInterval = 0.01;
         }
     }
 
@@ -113,16 +119,13 @@ public class Enemy extends A_InteractableObject {
 
     public void setShootStrategy(ShootStrategy shootStrategy) {
         this.shootStrategy = shootStrategy;
+        this.setShootingInterval();
     }
 
-    public double getShootingInterval() {
-        return shootingInterval;
+    private boolean isTimeToShoot(double elapsedTime) {
+        intervalAccumulation += elapsedTime;
+        return intervalAccumulation >= shootingInterval;
     }
-
-//    public boolean isTimeToShoot() {
-//        intervalAccumulation += GameWorld.getElapsedTime();
-//        return intervalAccumulation >= shootingInterval;
-//    }
 
     public void setSpeed(int speed) {
         if (speed > 0) {
