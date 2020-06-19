@@ -14,7 +14,7 @@ public class ShootDeathSpiral implements ShootStrategy {
     public void shoot(Enemy enemy, List<A_InteractableObject> shots) {
         alpha += 0.1;
         EnemyShot shot = new EnemyShot(enemy.getPosX() + enemy.getSizeX() / 2,
-                enemy.getPosY() + enemy.getSizeY(),
+                enemy.getPosY() + enemy.getSizeY() / 2,
                 this.SHOT_SIZE, this.SHOT_SIZE,
                 180 * Math.cos(alpha), 180 * Math.sin(alpha));
         shots.add(shot);

@@ -232,7 +232,7 @@ public class EnemyHandler {
     private Enemy createRandomEnemy() throws IOException {
         Random random = new Random();
         BufferedImage enemyShipImage = this.presets.get(random.nextInt(this.presets.size()));
-        Enemy randomEnemy = new Enemy(random.nextInt(Utilities.WIDTH - 300) + 200, -enemyShipImage.getHeight(),
+        Enemy randomEnemy = new Enemy(random.nextInt(Utilities.WIDTH - 500) + 200, -enemyShipImage.getHeight(),
                 enemyShipImage.getWidth(), enemyShipImage.getHeight(),
                 enemyShipImage, 2);
 

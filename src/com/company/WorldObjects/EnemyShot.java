@@ -38,7 +38,7 @@ public class EnemyShot extends A_InteractableObject {
     @Override
     public void draw(Graphics gc) {
         if (!exploding) {
-            gc.setColor(Color.RED);
+            gc.setColor(new Color(153, 0, 0));
             gc.fillOval(posX, posY, sizeX, sizeY);
         } else {
             if(explosionStep != 48) {
@@ -54,14 +54,16 @@ public class EnemyShot extends A_InteractableObject {
     @Override
     public void collides(A_InteractableObject a_interactableObject) {
         if (a_interactableObject instanceof Player || a_interactableObject instanceof Asteroid) {
-            if(Utilities.distance(this.posX, this.posY,
-                    a_interactableObject.getPosX(), a_interactableObject.getPosY()) < ShootStrategy.SHOT_SIZE * 4) {
-                if (this.getBounds().intersects(a_interactableObject.getBounds())) {
-                    this.destroyed = true;
-                    this.toRemove = true;
-                }
+            if (this.getBounds().intersects(a_interactableObject.getBounds())) {
+                this.destroyed = true;
+                this.toRemove = true;
             }
         }
+    }
+
+    @Override
+    public int getMaxSize() {
+        return ShootStrategy.SHOT_SIZE;
     }
 
     private boolean isOutVertically() {
