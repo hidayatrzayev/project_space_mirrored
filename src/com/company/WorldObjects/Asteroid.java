@@ -2,6 +2,7 @@ package com.company.WorldObjects;
 
 import com.company.Services.CircleMesh;
 import com.company.Services.Direction;
+import com.company.Services.Utilities;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -9,6 +10,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import static com.company.Services.Utilities.getAnimations;
+
 
 
 public class Asteroid extends A_InteractableObject{
@@ -81,10 +83,13 @@ public class Asteroid extends A_InteractableObject{
 
     @Override
     public void collides(A_InteractableObject a_interactableObject) {
-        if(this.getBounds().intersects(a_interactableObject.getBounds())) {
+        if (this.equals(a_interactableObject)){return;}
+        if (Utilities.distance(this.posX + this.sizeX/2, this.posY + this.sizeY/2, a_interactableObject.posX + a_interactableObject.getSizeX()/2 , a_interactableObject.getPosY() + a_interactableObject.getSizeY()/2) < Utilities.hypotenuse(a_interactableObject.getMaxSize(), this.getMaxSize())) {
             if (a_interactableObject instanceof Player || a_interactableObject instanceof PlayerShot) {
-                if (!a_interactableObject.isDestroyed()) {
-                    this.exploding = true;
+                if (this.getBounds().intersects(a_interactableObject.getBounds())) {
+                    if (!a_interactableObject.isDestroyed()) {
+                        this.exploding = true;
+                    }
                 }
             }
             if (a_interactableObject instanceof Enemy) {
@@ -94,6 +99,14 @@ public class Asteroid extends A_InteractableObject{
             }
         }
     }
+
+
+    @Override
+    public int getMaxSize(){
+        return 50;
+    }
+
+
 }
 
 

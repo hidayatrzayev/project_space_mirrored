@@ -1,6 +1,7 @@
 package com.company.WorldObjects;
 
 import com.company.Services.ComplicatedMesh;
+import com.company.Services.Utilities;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -8,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import static com.company.Services.Utilities.getAnimations;
+
 
 public class Player extends A_InteractableObject
 {
@@ -50,11 +52,14 @@ public class Player extends A_InteractableObject
 
     @Override
     public void collides(A_InteractableObject a_interactableObject) {
-        if(this.getBounds().intersects(a_interactableObject.getBounds())) {
-            if (a_interactableObject instanceof Asteroid || a_interactableObject instanceof EnemyShot || a_interactableObject instanceof  Enemy) {
-                if (!a_interactableObject.isDestroyed() && this.lastAttacker != a_interactableObject.hashCode()) {
-                    this.exploding = true;
-                    this.lastAttacker = a_interactableObject.hashCode();
+        if (this.equals(a_interactableObject)){return;}
+        if (Utilities.distance(this.posX + this.sizeX/2, this.posY + this.sizeY/2, a_interactableObject.posX + a_interactableObject.getSizeX()/2 , a_interactableObject.getPosY() + a_interactableObject.getSizeY()/2) < Utilities.hypotenuse(a_interactableObject.getMaxSize(), this.getMaxSize())) {
+            if (a_interactableObject instanceof Asteroid || a_interactableObject instanceof EnemyShot || a_interactableObject instanceof Enemy) {
+                if (this.getBounds().intersects(a_interactableObject.getBounds())) {
+                    if (!a_interactableObject.isDestroyed() && this.lastAttacker != a_interactableObject.hashCode()) {
+                        this.exploding = true;
+                        this.lastAttacker = a_interactableObject.hashCode();
+                    }
                 }
             }
         }
@@ -83,4 +88,15 @@ public class Player extends A_InteractableObject
     {
         this.velY = velY;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"posX\":\"" + posX + '\"' +
+                ",\"posY\":\"" + posY + '\"' +
+                ",\"sizeX\":\"" + sizeX + '\"' +
+                ",\"sizeY\":\"" + sizeY+ '\"' +
+                '}';
+    }
+
 }

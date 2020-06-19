@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import static com.company.Services.Utilities.getAnimations;
+import static java.lang.Integer.max;
 
 public class Enemy extends A_InteractableObject {
 
@@ -75,11 +76,14 @@ public class Enemy extends A_InteractableObject {
      * @return {@code true} if two objects collide, otherwise {@code} false.
      */
     public void collides(A_InteractableObject other) {
-        if(this.getBounds().intersects(other.getBounds())) {
-            if (other instanceof  PlayerShot && !(other instanceof EnemyShot)) {
-                if (!other.isDestroyed() && lastAttacker != other.hashCode()) {
-                    this.damage();
-                    lastAttacker = other.hashCode();
+        if (this.equals(other)){return;}
+        if (Utilities.distance(this.posX + this.sizeX/2, this.posY + this.sizeY/2, other.posX + other.getSizeX()/2 , other.getPosY() + other.getSizeY()/2) < Utilities.hypotenuse(other.getMaxSize(), this.getMaxSize())) {
+            if (other instanceof PlayerShot && !(other instanceof EnemyShot) || other instanceof Player) {
+                if (this.getBounds().intersects(other.getBounds())) {
+                    if (!other.isDestroyed() && lastAttacker != other.hashCode()) {
+                        this.damage();
+                        lastAttacker = other.hashCode();
+                    }
                 }
             }
         }
