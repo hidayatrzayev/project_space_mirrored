@@ -1,8 +1,13 @@
 package com.company.Handlers;
 
+import com.company.Movements.*;
 import com.company.Services.BossEnemyDeserializer;
 import com.company.Services.Deserializer;
 import com.company.Services.Utilities;
+import com.company.Shootings.ShootCircle;
+import com.company.Shootings.ShootDeathSpiral;
+import com.company.Shootings.ShootStraight;
+import com.company.Shootings.ShootStrategy;
 import com.company.WorldObjects.EnemyShot;
 import com.company.WorldObjects.A_InteractableObject;
 import com.company.WorldObjects.BossEnemy;
@@ -22,7 +27,7 @@ import java.util.List;
 
 public class EnemyHandler {
 
-    public static final int MAX_SCREEN_ENEMIES = 5;
+    public static final int MAX_SCREEN_ENEMIES = 1;
 
     private final List<BufferedImage> presets = new ArrayList<>(
             Arrays.asList(
@@ -30,6 +35,23 @@ public class EnemyHandler {
                     ImageIO.read((getClass().getClassLoader().getResourceAsStream("Enemies/enemy_ship_2.png"))),
                     ImageIO.read((getClass().getClassLoader().getResourceAsStream("Enemies/enemy_ship_3.png"))),
                     ImageIO.read((getClass().getClassLoader().getResourceAsStream("Enemies/enemy_ship_4.png")))
+            )
+    );
+
+    private final List<MoveStrategy> movementPatterns = new ArrayList<>(
+            Arrays.asList(
+                    new MoveStraightNormal(),
+                    new MoveSinusoidNarrow(),
+                    new MoveSinusoidWide(),
+                    new MoveCircular()
+            )
+    );
+
+    private final List<ShootStrategy> shootingPatterns = new ArrayList<>(
+            Arrays.asList(
+                    new ShootStraight(),
+                    new ShootCircle(),
+                    new ShootDeathSpiral()
             )
     );
 
@@ -70,11 +92,22 @@ public class EnemyHandler {
      * Creates and adds the boss enemy to the screen.
      */
     private void spawnBossEnemy() {
-
         if (bossEnemy != null) {
+            bossEnemy.setMoveStrategy(new MoveStraightNormal());
+            bossEnemy.setShootStrategy(new ShootCircle());
             this.screenEnemies.add(bossEnemy);
             this.bossFight = true;
         }
+    }
+
+    /**
+     * Respawns the enemy that flew over the screen without getting destroyed.
+     *
+     * @param enemy - enemy that is to be respawned
+     */
+    private void respawnEnemy(Enemy enemy) {
+        enemy.setPosY(-enemy.getImg().getHeight());
+        enemy.setPosX(50 + new Random().nextInt(Utilities.WIDTH - 100));
     }
 
     /**
@@ -101,6 +134,11 @@ public class EnemyHandler {
         return null;
     }
 
+    /**
+     * Draws all the enemies and their shots.
+     *
+     * @param gc - {@code Graphics} object that draws on the screen
+     */
     public void drawAll(Graphics gc) {
         this.drawEnemies(gc);
         this.drawEnemyShots(gc);
@@ -112,9 +150,7 @@ public class EnemyHandler {
      * @param gc - {@code Graphics} object that draws on the screen
      */
     private void drawEnemies(Graphics gc) {
-        for (A_InteractableObject enemy : this.screenEnemies) {
-            enemy.draw(gc);
-        }
+        this.screenEnemies.forEach((enemy) -> enemy.draw(gc));
     }
 
 
@@ -122,11 +158,13 @@ public class EnemyHandler {
      * Draws all enemy shots
      */
     private void drawEnemyShots(Graphics gc) {
-        for (A_InteractableObject shot : this.enemyShots) {
-            shot.draw(gc);
-        }
+        this.enemyShots.forEach((shot) -> shot.draw(gc));
     }
 
+    /**
+     * Updates all the enemies on the screen and their respective shots.
+     * Additionally randomly chooses enemies to shoot at the player.
+     */
     public void updateAll(double elapsedTime) {
         if (this.screenEnemies.isEmpty() && this.enemies.isEmpty()) {
             if (!bossFight) {
@@ -136,12 +174,7 @@ public class EnemyHandler {
             }
         }
 
-        try {
-            this.shootRandomly();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        this.shootAll(elapsedTime);
         this.updateEnemies(elapsedTime);
         this.updateEnemyShots(elapsedTime);
     }
@@ -157,21 +190,22 @@ public class EnemyHandler {
             if (currentEnemy.isDestroyed()) {
                 this.screenEnemies.remove(currentEnemy);
                 if (!enemies.isEmpty()) {
-                    this.screenEnemies.add((Enemy) this.enemies.remove(0));
+                    this.screenEnemies.add(this.enemies.remove(0));
                 }
+            } else if (currentEnemy.getPosY() > Utilities.HEIGHT) {
+                this.respawnEnemy((Enemy) currentEnemy);
             }
         }
     }
 
-
     /**
      * Updates all enemy shots
      */
-    public void updateEnemyShots(double elapsedTime) {
+    private void updateEnemyShots(double elapsedTime) {
         for (int i = this.enemyShots.size() - 1; i >= 0; i--) {
             EnemyShot shot = (EnemyShot) this.enemyShots.get(i);
             shot.update(elapsedTime);
-            if (shot.toRemove) {
+            if (shot.isToRemove()) {
                 this.enemyShots.remove(i);
             }
         }
@@ -181,14 +215,11 @@ public class EnemyHandler {
      * Randomly selects an enemy from the list of enemies currently shown on the screen
      * and initiates a shot. The shot will appear with the probability of 5%.
      */
-    private void shootRandomly() throws IOException {
-        Random random = new Random();
-        float chance = random.nextFloat();
-        if (chance > 0.95 && !this.screenEnemies.isEmpty()) {
-            int randomIndex = random.nextInt(this.screenEnemies.size());
-            if (this.enemyShots.size() < complexity * 5 / 2) {
-                Enemy randomEnemy = (Enemy) this.screenEnemies.get(randomIndex);
-                this.enemyShots.add(randomEnemy.shoot());
+    private void shootAll(double elapsedTime) {
+        for (int i = 0; i < screenEnemies.size(); i++) {
+            Enemy randomEnemy = (Enemy) screenEnemies.get(i);
+            if (!randomEnemy.isExploding()) {
+                randomEnemy.shoot(enemyShots, elapsedTime);
             }
         }
     }
@@ -201,9 +232,19 @@ public class EnemyHandler {
     private Enemy createRandomEnemy() throws IOException {
         Random random = new Random();
         BufferedImage enemyShipImage = this.presets.get(random.nextInt(this.presets.size()));
-        return new Enemy(50 + random.nextInt(Utilities.WIDTH - 100), -enemyShipImage.getHeight(),
+        Enemy randomEnemy = new Enemy(random.nextInt(Utilities.WIDTH - 500) + 200, -enemyShipImage.getHeight(),
                 enemyShipImage.getWidth(), enemyShipImage.getHeight(),
                 enemyShipImage, 2);
+
+        MoveStrategy randomMoveStrategy = movementPatterns.get(random.nextInt(movementPatterns.size()));
+        ShootStrategy shootStrategy = shootingPatterns.get(random.nextInt(shootingPatterns.size()));
+        randomEnemy.setMoveStrategy(randomMoveStrategy);
+        randomEnemy.setShootStrategy(shootStrategy);
+        if (randomMoveStrategy instanceof MoveCircular) {
+            randomEnemy.setSpeed(200);
+        }
+
+        return randomEnemy;
     }
 
     /**
@@ -222,15 +263,17 @@ public class EnemyHandler {
     }
 
     /**
-     * Checks whether or not currently it is a boss fight.
+     * Returns the list of enemy shots
      */
-    public boolean isBossFight() {
-        return this.bossFight;
-    }
-
     public List<A_InteractableObject> getEnemyShots() {
         return this.enemyShots;
     }
 
     public boolean fightIsOver(){return this.screenEnemies.isEmpty() && this.enemies.isEmpty() && isBossFight();}
+    /**
+     * Checks whether or not currently it is a boss fight.
+     */
+    public boolean isBossFight() {
+        return this.bossFight;
+    }
 }

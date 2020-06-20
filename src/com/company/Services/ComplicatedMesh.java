@@ -4,14 +4,12 @@ import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.FlatteningPathIterator;
 import java.awt.image.BufferedImage;
-import java.util.List;
 
 public class ComplicatedMesh<T> implements ObjectMesh<T> {
 
 
     BufferedImage image;
     private Polygon mesh;
-    private List<Point> points;
     private int posX;
     private int posY;
 
@@ -22,9 +20,9 @@ public class ComplicatedMesh<T> implements ObjectMesh<T> {
 
 
     public Polygon getPolygonOutline(BufferedImage image) {
-        Area a  = this.getOutline(image, new Color(0,0,0,0),false,0); // 10 or whatever color tolerance you want
+        Area a  = getOutline(image, new Color(0,0,0,0),false,0); // 10 or whatever color tolerance you want
         Polygon p = new Polygon();
-        FlatteningPathIterator fpi = new FlatteningPathIterator(a.getPathIterator(null), 1000000000); // 0.1 or how sloppy you want it
+        FlatteningPathIterator fpi = new FlatteningPathIterator(a.getPathIterator(null), 0.1); // 0.1 or how sloppy you want it
         double[] pts = new double[6];
         while (!fpi.isDone()) {
             switch (fpi.currentSegment(pts)) {

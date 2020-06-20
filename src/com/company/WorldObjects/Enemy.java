@@ -1,12 +1,17 @@
 package com.company.WorldObjects;
 
 import com.company.Services.ComplicatedMesh;
-import com.company.Services.Utilities;
+import com.company.Movements.MoveStrategy;
+import com.company.Shootings.ShootCircle;
+import com.company.Shootings.ShootStraight;
+import com.company.Shootings.ShootStrategy;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.company.Services.Utilities.getAnimations;
 
@@ -15,7 +20,11 @@ public class Enemy extends A_InteractableObject {
     protected int speed;
     protected int health;
     protected int direction;
-    protected int lastAttacker;
+    protected double shootingInterval;
+    protected double intervalAccumulation = 0.0;
+    protected MoveStrategy moveStrategy;
+    protected ShootStrategy shootStrategy;
+    protected List<A_InteractableObject> lastAttacker;
 
     /**
      * This constructor specifies the default health of 1 and is meant to be used to create regular enemies
@@ -27,6 +36,7 @@ public class Enemy extends A_InteractableObject {
         this.direction = 1;
         this.explosionAnimations = getAnimations(51,51,6,8,ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
         this.mesh = new ComplicatedMesh(img);
+        this.lastAttacker = new ArrayList<>();
     }
 
     /**
@@ -37,15 +47,13 @@ public class Enemy extends A_InteractableObject {
         this.speed = speed;
         this.health = health;
         this.direction = 1;
+        this.lastAttacker = new ArrayList<>();
     }
 
     @Override
     public void update(double elapsedTime) {
         if (!exploding && !destroyed) {
-            posY += (speed * direction);
-        }
-        if (posY > Utilities.HEIGHT) {
-            destroyed = true;
+            moveStrategy.move(this, speed, elapsedTime);
         }
     }
 
@@ -72,14 +80,15 @@ public class Enemy extends A_InteractableObject {
      * Checks if this enemy collides with any other interactable object.
      *
      * @param other - other object to check the collision against
-     * @return {@code true} if two objects collide, otherwise {@code} false.
+     * @return {@code true} if two objects collide, otherwise {@code false}.
      */
+    @Override
     public void collides(A_InteractableObject other) {
-        if(this.getBounds().intersects(other.getBounds())) {
-            if (other instanceof  PlayerShot && !(other instanceof EnemyShot)) {
-                if (!other.isDestroyed() && lastAttacker != other.hashCode()) {
+        if (other instanceof PlayerShot && !(other instanceof EnemyShot) || other instanceof Player) {
+            if (this.getBounds().intersects(other.getBounds())) {
+                if (!this.lastAttacker.contains(other)) {
                     this.damage();
-                    lastAttacker = other.hashCode();
+                    this.lastAttacker.add(other);
                 }
             }
         }
@@ -96,10 +105,38 @@ public class Enemy extends A_InteractableObject {
         }
     }
 
-    public EnemyShot shoot() throws IOException {
-        BufferedImage shot = ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/shot.png")));
-        return new EnemyShot((posX + img.getWidth() / 2) - 26, posY + img.getHeight() - 40,
-                shot.getWidth(), shot.getHeight(),
-                ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/shot.png"))));
+    public void shoot(List<A_InteractableObject> shots, double elapsedTime) {
+        if (this.isTimeToShoot(elapsedTime)) {
+            intervalAccumulation -= shootingInterval;
+            shootStrategy.shoot(this, shots);
+        }
+    }
+
+    private void setShootingInterval() {
+        if (shootStrategy instanceof ShootStraight || shootStrategy instanceof ShootCircle) {
+            this.shootingInterval = 1;
+        } else {
+            this.shootingInterval = 0.01;
+        }
+    }
+
+    public void setMoveStrategy(MoveStrategy moveStrategy) {
+        this.moveStrategy = moveStrategy;
+    }
+
+    public void setShootStrategy(ShootStrategy shootStrategy) {
+        this.shootStrategy = shootStrategy;
+        this.setShootingInterval();
+    }
+
+    private boolean isTimeToShoot(double elapsedTime) {
+        intervalAccumulation += elapsedTime;
+        return intervalAccumulation >= shootingInterval;
+    }
+
+    public void setSpeed(int speed) {
+        if (speed > 0) {
+            this.speed = speed;
+        }
     }
 }

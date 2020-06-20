@@ -30,4 +30,10 @@ public class Utilities
     public static void setHEIGHT(int HEIGHT) {
         Utilities.HEIGHT = HEIGHT;
     }
-}
+
+
+    public static int hypotenuse(int sizeA, int sizeB) {
+        return (int) Math.sqrt(Math.pow(sizeA, 2) + Math.pow(sizeB, 2));
+    }
+
+}   

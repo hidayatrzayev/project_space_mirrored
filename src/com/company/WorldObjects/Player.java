@@ -1,19 +1,23 @@
 package com.company.WorldObjects;
 
 import com.company.Services.ComplicatedMesh;
+import com.company.Services.Utilities;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.company.Services.Utilities.getAnimations;
+
 
 public class Player extends A_InteractableObject
 {
 
     private BufferedImage[] explosionAnimations;
-    private int lastAttacker;
+    private List<A_InteractableObject> lastAttacker;
     private double velX = 0;
     private double velY = 0;
 
@@ -21,6 +25,7 @@ public class Player extends A_InteractableObject
         super(posX, posY, sizeX, sizeY, img);
         this.explosionAnimations = getAnimations(51,51,6,8,ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
         this.mesh = new ComplicatedMesh(img);
+        this.lastAttacker = new ArrayList<>();
     }
 
     @Override
@@ -50,14 +55,14 @@ public class Player extends A_InteractableObject
 
     @Override
     public void collides(A_InteractableObject a_interactableObject) {
-        if(this.getBounds().intersects(a_interactableObject.getBounds())) {
-            if (a_interactableObject instanceof Asteroid || a_interactableObject instanceof EnemyShot || a_interactableObject instanceof  Enemy) {
-                if (!a_interactableObject.isDestroyed() && this.lastAttacker != a_interactableObject.hashCode()) {
-                    this.exploding = true;
-                    this.lastAttacker = a_interactableObject.hashCode();
+            if (a_interactableObject instanceof Asteroid || a_interactableObject instanceof EnemyShot || a_interactableObject instanceof Enemy) {
+                if (this.getBounds().intersects(a_interactableObject.getBounds())) {
+                    if (!this.lastAttacker.contains(a_interactableObject)) {
+                        this.exploding = true;
+                        this.lastAttacker.add(a_interactableObject);
+                    }
                 }
             }
-        }
     }
 
 
@@ -83,4 +88,15 @@ public class Player extends A_InteractableObject
     {
         this.velY = velY;
     }
+
+    @Override
+    public String toString() {
+        return "{" +
+                "\"posX\":\"" + posX + '\"' +
+                ",\"posY\":\"" + posY + '\"' +
+                ",\"sizeX\":\"" + sizeX + '\"' +
+                ",\"sizeY\":\"" + sizeY+ '\"' +
+                '}';
+    }
+
 }
