@@ -118,7 +118,14 @@ public class GameWorld
             double elapsedTime = updateLength / 1_000_000_000.0;
             lastLoopTime = now;
             double delta = updateLength / ((double)OPTIMAL_TIME);
-            graphicSystem.draw(universe);
+            universe.update();
+            //graphicSystem.draw(universe);
+            universe.draw(graphicSystem.getG());
+/*<<<<<<< HEAD
+=======
+
+            enemyHandler.shootRandomly();
+>>>>>>> 1314da9a680329a0ea590e5685b9cded810713b5*/
 
             asteroidHandler.updateAll(elapsedTime);
             asteroidHandler.drawAll(graphicSystem.getG());
@@ -142,6 +149,7 @@ public class GameWorld
             graphicSystem.getG().setColor(Color.WHITE);
             graphicSystem.getG().drawString("Position X: " + (Integer.toString(player.getPosX())),  10, 20);
             graphicSystem.getG().drawString("Position Y: " + (Integer.toString(player.getPosY())),  10, 45);
+            graphicSystem.getG().drawString("Current height: " + (Integer.toString(universe.currentHeight)),  10, 60);
             graphicSystem.redraw();
             try {
                 long timeout = (lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000;
