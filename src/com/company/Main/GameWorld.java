@@ -59,7 +59,7 @@ public class GameWorld
         worldObjects.add(shots);
         physicsSystem = new PhysicsSystem(worldObjects);
         int playerSpeed = 7 * (Utilities.WIDTH/1280);
-
+        this.screenRefresh();
         inputSystem.configureInput(graphicSystem, player, playerSpeed, shots);
 
         graphicSystem.addKeyListener(new KeyAdapter() {
@@ -79,6 +79,7 @@ public class GameWorld
                     }
             }
         });
+
     }
 
     public void run() throws InterruptedException, IOException {
@@ -89,21 +90,15 @@ public class GameWorld
         {
             if (isPaused){
                 while (isPaused){
-                    graphicSystem.getG().setColor(Color.BLACK);
-                    graphicSystem.getG().fillRect(0,0,Utilities.WIDTH,Utilities.HEIGHT);
-                    graphicSystem.draw(universe);
-                    asteroidHandler.drawAll(graphicSystem.getG());
-                    enemyHandler.drawAll(graphicSystem.getG());
-                    player.draw(graphicSystem.getG());
-
-                    for (int i = shots.size() - 1; i >=0 ; i--) {
-                        PlayerShot shot = (PlayerShot) shots.get(i);
-                        shot.draw(graphicSystem.getG());
-                    }
+                    this.screenRefresh();
                     Image background = ImageIO.read((getClass().getClassLoader().getResourceAsStream("Data/background.png")));
                     graphicSystem.getG().drawImage(background.getScaledInstance(Utilities.WIDTH,Utilities.HEIGHT, Image.SCALE_SMOOTH),0,0, null);
                     Image image = ImageIO.read((getClass().getClassLoader().getResourceAsStream("Data/Pause.png")));
                     graphicSystem.getG().drawImage(image,(Utilities.WIDTH/2) - ((BufferedImage) image).getWidth()/2,Utilities.HEIGHT/2 - ((BufferedImage) image).getHeight()/2 , null);
+                    graphicSystem.getG().setColor(Color.WHITE);
+                    graphicSystem.getG().setFont(new Font("default", Font.BOLD, 16));
+                    graphicSystem.getG().drawString("Press ESC to exit the game.",  20, Utilities.HEIGHT - 20);
+                    graphicSystem.getG().drawString("Press SPACE to continue.",  Utilities.WIDTH - 220, Utilities.HEIGHT - 20);
                     graphicSystem.redraw();
 
 
@@ -164,4 +159,18 @@ public class GameWorld
 
 
     public void setGraphicSystem(GraphicSystem p) { graphicSystem = p; }
+
+    public void screenRefresh(){
+        graphicSystem.getG().setColor(Color.BLACK);
+        graphicSystem.getG().fillRect(0,0,Utilities.WIDTH,Utilities.HEIGHT);
+        graphicSystem.draw(universe);
+        asteroidHandler.drawAll(graphicSystem.getG());
+        enemyHandler.drawAll(graphicSystem.getG());
+        player.draw(graphicSystem.getG());
+
+        for (int i = shots.size() - 1; i >=0 ; i--) {
+            PlayerShot shot = (PlayerShot) shots.get(i);
+            shot.draw(graphicSystem.getG());
+        }
+    }
 }

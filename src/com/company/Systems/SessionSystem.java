@@ -93,6 +93,7 @@ public class SessionSystem {
     }
 
     public void loadProgress(){
+        this.parseLevels();
         try {
             JSONParser parser = new JSONParser();
             JSONObject sessionSystem = (JSONObject)parser.parse(new FileReader("resources/Data/progress.json"));
@@ -107,18 +108,7 @@ public class SessionSystem {
     }
 
     public void startNewGame(){
-        JSONParser parser = new JSONParser();
-        try {
-            JSONArray levels = (JSONArray)parser.parse(new FileReader("resources/Data/universe.json"));
-            Iterator iterator = levels.iterator();
-            while (iterator.hasNext()) {
-                JSONObject jsonObject = (JSONObject) parser.parse(iterator.next().toString());
-                Universe universe = deserializeUniverse(jsonObject);
-                this.levels.put(String.valueOf(universe.getLevel()), universe);
-            }
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+        this.parseLevels();
         currentLevel = 1;
         universe = levels.get(String.valueOf(currentLevel));
         currentScore = 0;
@@ -140,4 +130,20 @@ public class SessionSystem {
         Deserializer deserializer = new PlayerDeserializer();
         return (Player) deserializer.deserialize(jsonObject);
     }
+
+    private void parseLevels(){
+        JSONParser parser = new JSONParser();
+        try {
+            JSONArray levels = (JSONArray)parser.parse(new FileReader("resources/Data/universe.json"));
+            Iterator iterator = levels.iterator();
+            while (iterator.hasNext()) {
+                JSONObject jsonObject = (JSONObject) parser.parse(iterator.next().toString());
+                Universe universe = deserializeUniverse(jsonObject);
+                this.levels.put(String.valueOf(universe.getLevel()), universe);
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

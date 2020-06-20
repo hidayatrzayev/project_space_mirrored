@@ -20,6 +20,7 @@ public class Player extends A_InteractableObject
     private List<A_InteractableObject> lastAttacker;
     private double velX = 0;
     private double velY = 0;
+    private int health = 20;
 
     public Player(int posX, int posY, int sizeX,int sizeY, BufferedImage img) throws IOException {
         super(posX, posY, sizeX, sizeY, img);
@@ -58,7 +59,7 @@ public class Player extends A_InteractableObject
             if (a_interactableObject instanceof Asteroid || a_interactableObject instanceof EnemyShot || a_interactableObject instanceof Enemy) {
                 if (this.getBounds().intersects(a_interactableObject.getBounds())) {
                     if (!this.lastAttacker.contains(a_interactableObject)) {
-                        this.exploding = true;
+                        this.damage();
                         this.lastAttacker.add(a_interactableObject);
                     }
                 }
@@ -98,5 +99,13 @@ public class Player extends A_InteractableObject
                 ",\"sizeY\":\"" + sizeY+ '\"' +
                 '}';
     }
+
+    public void damage() {
+        this.health--;
+        if (this.health == 0) {
+            this.exploding = true;
+        }
+    }
+
 
 }
