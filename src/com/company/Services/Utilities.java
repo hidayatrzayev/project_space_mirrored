@@ -7,9 +7,11 @@ public class Utilities
 {
 
 
+
     public static int WIDTH ;
     public static int HEIGHT;
     public static Random random = new Random();
+
 
 
     public static int distance(int x1, int y1, int x2, int y2) {

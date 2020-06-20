@@ -121,6 +121,11 @@ public class GameWorld
             universe.update();
             //graphicSystem.draw(universe);
             universe.draw(graphicSystem.getG());
+/*<<<<<<< HEAD
+=======
+
+            enemyHandler.shootRandomly();
+>>>>>>> 1314da9a680329a0ea590e5685b9cded810713b5*/
 
             asteroidHandler.updateAll(elapsedTime);
             asteroidHandler.drawAll(graphicSystem.getG());
