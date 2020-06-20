@@ -18,7 +18,7 @@ public class Universe {
     private int posX, posY = 0;
     private int level;
     private String backgroundPath;
-    private BufferedImage background;
+    private Image background;
     private int complexity;
     private int numberOfEnemies;
     private String bossEnemy;
@@ -40,8 +40,8 @@ public class Universe {
         this.complexity = complexity;
         this.numberOfEnemies = numberOfEnemies;
         this.bossEnemy = bossEnemy;
-        this.background = ImageIO.read((getClass().getClassLoader().getResourceAsStream(backgroundPath)))/*.getScaledInstance(Utilities.WIDTH, Utilities.HEIGHT, Image.SCALE_DEFAULT/*, Image.SCALE_SMOOTH)*/;
-
+        this.background = ImageIO.read((getClass().getClassLoader().getResourceAsStream(backgroundPath)))
+                .getScaledInstance(Utilities.WIDTH, Utilities.HEIGHT, Image.SCALE_SMOOTH);
 
         for(int i = 0; i < 500; i++)
         {
