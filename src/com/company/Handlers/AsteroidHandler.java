@@ -31,8 +31,6 @@ public class AsteroidHandler {
     public AsteroidHandler(int complexity) throws IOException {
         this.complexity = complexity;
         this.lastSpawn = System.nanoTime();
-        String curDir = System.getProperty("user.dir");
-        System.out.println(curDir);
         this.presets = Arrays.asList(ImageIO.read((getClass().getClassLoader().getResourceAsStream("Asteroids/asteroid3.png"))));
     }
 

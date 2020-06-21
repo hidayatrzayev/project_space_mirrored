@@ -1,9 +1,7 @@
 package com.company.Systems;
 
+import com.company.Services.*;
 import com.company.WorldObjects.Player;
-import com.company.Services.Deserializer;
-import com.company.Services.PlayerDeserializer;
-import com.company.Services.UniverseDeserializer;
 import com.company.Main.Universe;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -22,6 +20,7 @@ public class SessionSystem {
     private Player playerState;
     private Universe universe;
     HashMap<String, Universe> levels = new HashMap<>();
+    private GameState gameState;
 
 
     private static SessionSystem ourInstance = new SessionSystem();
@@ -105,6 +104,7 @@ public class SessionSystem {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        this.gameState = GameState.RUNNING;
     }
 
     public void startNewGame(){
@@ -112,7 +112,7 @@ public class SessionSystem {
         currentLevel = 1;
         universe = levels.get(String.valueOf(currentLevel));
         currentScore = 0;
-
+        this.gameState = GameState.RUNNING;
     }
 
     public void nextLevel(){
@@ -146,4 +146,11 @@ public class SessionSystem {
         }
     }
 
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
+    }
 }

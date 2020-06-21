@@ -1,5 +1,6 @@
 package com.company.Main;
 
+import com.company.Services.GameState;
 import com.company.Services.Utilities;
 import com.company.Systems.BackgroundMusicPlayer;
 import com.company.Systems.InputSystem;
@@ -9,6 +10,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.lang.reflect.GenericArrayType;
 import java.net.URL;
 
 public class GameMain
@@ -23,11 +25,14 @@ public class GameMain
         window.setVisible(true);
         GameFrame frame = new GameFrame();
         (new Thread((new BackgroundMusicPlayer()))).start();
-        SessionSystem.getInstance().startNewGame(); //TODO
-        SessionSystem.getInstance().loadProgress(); //TODO
+        SessionSystem.getInstance().setGameState(GameState.MAINMENU);
+        //TODO OPEN MAIN MENU HERE AND GIVE A CHOICE OF START OR LOAD THE GAME
+        SessionSystem.getInstance().startNewGame();     //TODO DELETE THIS
+        //SessionSystem.getInstance().loadProgress();     //TODO DELETE THIS
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setUndecorated(true);
-        for (int level = SessionSystem.getInstance().getLevel(); level < SessionSystem.getInstance().getNumberOfLevels(); level++) {
+        int level = SessionSystem.getInstance().getLevel();
+        while (level <= SessionSystem.getInstance().getNumberOfLevels() && SessionSystem.getInstance().getGameState() == GameState.RUNNING) {
             gameWorld = new GameWorld();
             gameWorld.setGraphicSystem(frame.getPanel());
             gameWorld.setup();
@@ -36,10 +41,25 @@ public class GameMain
                 frame.setVisible(true);
             }
             gameWorld.run();
-            SessionSystem.getInstance().nextLevel();
-            SessionSystem.getInstance().saveProgress();
+            if (SessionSystem.getInstance().getGameState() == GameState.RUNNING) {
+                SessionSystem.getInstance().nextLevel();
+                SessionSystem.getInstance().saveProgress();
+                level++;
+            }
+            //TODO OPEN A MENU SPECIFIED IN SESSIONSYSTEM (INTERMEDIATE MENU)
+            //TODO e.g menuHandler.open(SessionSystem.getInstance().getGameState())....//TODO
+            //TODO BUT MEANWHILE REPEAT LEVEL:
+            if (SessionSystem.getInstance().getGameState() == GameState.DEAD){  //TODO DELETE THIS
+                level--;                                                        //TODO DELETE THIS
+                SessionSystem.getInstance().setGameState(GameState.RUNNING);    //TODO DELETE THIS
+            }                                                                   //TODO DELETE THIS
         }
-        //TODO
+        if (SessionSystem.getInstance().getGameState() == GameState.RUNNING) {
+            SessionSystem.getInstance().setGameState(GameState.FINISH);
+            //TODO IF PLAYER COMPLETED ALL LEVELS --> DO SOMETHING
+        }else  if (SessionSystem.getInstance().getGameState() == GameState.DEAD){
+            //TODO IF PLAYER DECIDED TO EXIT AFTER THE DEATH --> OPEN MAINMENU
+        }
     }
     public static void main(String[] args) throws IOException, InterruptedException {
         setResolution();
