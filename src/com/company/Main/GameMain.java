@@ -1,6 +1,7 @@
 package com.company.Main;
 
 import com.company.Services.Utilities;
+import com.company.Systems.BackgroundMusicPlayer;
 import com.company.Systems.InputSystem;
 import com.company.Systems.SessionSystem;
 
@@ -14,7 +15,7 @@ public class GameMain
 
     public GameMain() throws IOException, InterruptedException {
         GameFrame frame = new GameFrame();
-
+        (new Thread((new BackgroundMusicPlayer()))).start();
         SessionSystem.getInstance().startNewGame(); //TODO
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setUndecorated(true);
