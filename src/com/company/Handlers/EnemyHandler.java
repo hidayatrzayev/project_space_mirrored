@@ -3,11 +3,13 @@ package com.company.Handlers;
 import com.company.Movements.*;
 import com.company.Services.BossEnemyDeserializer;
 import com.company.Services.Deserializer;
+import com.company.Services.GameState;
 import com.company.Services.Utilities;
 import com.company.Shootings.ShootCircle;
 import com.company.Shootings.ShootDeathSpiral;
 import com.company.Shootings.ShootStraight;
 import com.company.Shootings.ShootStrategy;
+import com.company.Systems.SessionSystem;
 import com.company.WorldObjects.EnemyShot;
 import com.company.WorldObjects.A_InteractableObject;
 import com.company.WorldObjects.BossEnemy;
@@ -269,7 +271,13 @@ public class EnemyHandler {
         return this.enemyShots;
     }
 
-    public boolean fightIsOver(){return this.screenEnemies.isEmpty() && this.enemies.isEmpty() && isBossFight();}
+    public boolean fightIsOver(){
+        if(this.screenEnemies.isEmpty() && this.enemies.isEmpty() && isBossFight()){
+            //TODO SessionSystem.getInstance().setGameState(GameState.INTMENU); WHEN MENU WILL BE IMPLEMENTED
+            return true;
+        }
+        return false;
+    }
     /**
      * Checks whether or not currently it is a boss fight.
      */

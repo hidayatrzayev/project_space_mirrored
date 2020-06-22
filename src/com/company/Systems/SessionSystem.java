@@ -1,9 +1,7 @@
 package com.company.Systems;
 
+import com.company.Services.*;
 import com.company.WorldObjects.Player;
-import com.company.Services.Deserializer;
-import com.company.Services.PlayerDeserializer;
-import com.company.Services.UniverseDeserializer;
 import com.company.Main.Universe;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -22,6 +20,7 @@ public class SessionSystem {
     private Player playerState;
     private Universe universe;
     HashMap<String, Universe> levels = new HashMap<>();
+    private GameState gameState;
 
 
     private static SessionSystem ourInstance = new SessionSystem();
@@ -93,6 +92,7 @@ public class SessionSystem {
     }
 
     public void loadProgress(){
+        this.parseLevels();
         try {
             JSONParser parser = new JSONParser();
             JSONObject sessionSystem = (JSONObject)parser.parse(new FileReader("resources/Data/progress.json"));
@@ -104,25 +104,15 @@ public class SessionSystem {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        this.gameState = GameState.RUNNING;
     }
 
     public void startNewGame(){
-        JSONParser parser = new JSONParser();
-        try {
-            JSONArray levels = (JSONArray)parser.parse(new FileReader("resources/Data/universe.json"));
-            Iterator iterator = levels.iterator();
-            while (iterator.hasNext()) {
-                JSONObject jsonObject = (JSONObject) parser.parse(iterator.next().toString());
-                Universe universe = deserializeUniverse(jsonObject);
-                this.levels.put(String.valueOf(universe.getLevel()), universe);
-            }
-        } catch(Exception e) {
-            e.printStackTrace();
-        }
+        this.parseLevels();
         currentLevel = 1;
         universe = levels.get(String.valueOf(currentLevel));
         currentScore = 0;
-
+        this.gameState = GameState.RUNNING;
     }
 
     public void nextLevel(){
@@ -139,5 +129,28 @@ public class SessionSystem {
     private Player deserializePlayer(JSONObject jsonObject){
         Deserializer deserializer = new PlayerDeserializer();
         return (Player) deserializer.deserialize(jsonObject);
+    }
+
+    private void parseLevels(){
+        JSONParser parser = new JSONParser();
+        try {
+            JSONArray levels = (JSONArray)parser.parse(new FileReader("resources/Data/universe.json"));
+            Iterator iterator = levels.iterator();
+            while (iterator.hasNext()) {
+                JSONObject jsonObject = (JSONObject) parser.parse(iterator.next().toString());
+                Universe universe = deserializeUniverse(jsonObject);
+                this.levels.put(String.valueOf(universe.getLevel()), universe);
+            }
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public GameState getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(GameState gameState) {
+        this.gameState = gameState;
     }
 }

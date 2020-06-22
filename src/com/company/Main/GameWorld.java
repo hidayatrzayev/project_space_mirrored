@@ -2,6 +2,7 @@ package com.company.Main;
 
 import com.company.Handlers.AsteroidHandler;
 import com.company.Handlers.EnemyHandler;
+import com.company.Services.GameState;
 import com.company.Services.Utilities;
 import com.company.Systems.GraphicSystem;
 import com.company.Systems.InputSystem;
@@ -59,97 +60,39 @@ public class GameWorld
         worldObjects.add(shots);
         physicsSystem = new PhysicsSystem(worldObjects);
         int playerSpeed = 7 * (Utilities.WIDTH/1280);
-
+        this.drawScreenState();
         inputSystem.configureInput(graphicSystem, player, playerSpeed, shots);
-
         graphicSystem.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                super.keyPressed(e);
                 int key = e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == KeyEvent.VK_ESCAPE ? e.getKeyCode(): 0;
                     if (key == KeyEvent.VK_SPACE){
-                       if (isPaused == false) {
-                           isPaused = true;
-                       }else
-                        {
-                           isPaused = false;
-                       }
+                        isPaused = !isPaused;
+                        SessionSystem.getInstance().setGameState(GameState.PAUSED);
                 }else if(isPaused && key == KeyEvent.VK_ESCAPE) {
                         System.exit(0);
+                        SessionSystem.getInstance().setGameState(GameState.MAINMENU);
                     }
             }
         });
+
     }
 
     public void run() throws InterruptedException, IOException {
         enemyHandler.spawnEnemies(universe.getNumberOfEnemies());
         worldObjects.add(enemyHandler.getScreenEnemies());
         worldObjects.add(enemyHandler.getEnemyShots());
-        while(!enemyHandler.fightIsOver())
+        while(!enemyHandler.fightIsOver() && (sessionSystem.getGameState() == GameState.RUNNING || sessionSystem.getGameState() == GameState.PAUSED) )
         {
             if (isPaused){
-                while (isPaused){
-                    graphicSystem.getG().setColor(Color.BLACK);
-                    graphicSystem.getG().fillRect(0,0,Utilities.WIDTH,Utilities.HEIGHT);
-                    graphicSystem.draw(universe);
-                    asteroidHandler.drawAll(graphicSystem.getG());
-                    enemyHandler.drawAll(graphicSystem.getG());
-                    player.draw(graphicSystem.getG());
-
-                    for (int i = shots.size() - 1; i >=0 ; i--) {
-                        PlayerShot shot = (PlayerShot) shots.get(i);
-                        shot.draw(graphicSystem.getG());
-                    }
-                    Image background = ImageIO.read((getClass().getClassLoader().getResourceAsStream("Data/background.png")));
-                    graphicSystem.getG().drawImage(background.getScaledInstance(Utilities.WIDTH,Utilities.HEIGHT, Image.SCALE_SMOOTH),0,0, null);
-                    Image image = ImageIO.read((getClass().getClassLoader().getResourceAsStream("Data/Pause.png")));
-                    graphicSystem.getG().drawImage(image,(Utilities.WIDTH/2) - ((BufferedImage) image).getWidth()/2,Utilities.HEIGHT/2 - ((BufferedImage) image).getHeight()/2 , null);
-                    graphicSystem.redraw();
-
-
-
-                }
+                this.showPauseMenu();
             }
-            // work out how long its been since the last update, this
-            // will be used to calculate how far the entities should
-            // move this loop
-            long now = System.nanoTime();
-            long updateLength = now - lastLoopTime;
-            double elapsedTime = updateLength / 1_000_000_000.0;
-            lastLoopTime = now;
-            double delta = updateLength / ((double)OPTIMAL_TIME);
-            universe.update();
-            //graphicSystem.draw(universe);
-            universe.draw(graphicSystem.getG());
-/*<<<<<<< HEAD
-=======
-
-            enemyHandler.shootRandomly();
->>>>>>> 1314da9a680329a0ea590e5685b9cded810713b5*/
-
-            asteroidHandler.updateAll(elapsedTime);
-            asteroidHandler.drawAll(graphicSystem.getG());
-
-            enemyHandler.updateAll(elapsedTime);
-            enemyHandler.drawAll(graphicSystem.getG());
-
-            player.update(elapsedTime);
-            player.draw(graphicSystem.getG());
-            for (int i = shots.size() - 1; i >=0 ; i--) {
-                PlayerShot shot = (PlayerShot) shots.get(i);
-                if (shot.getPosY() < 0 || shot.toRemove) {
-                    shots.remove(i);
-                    continue;
-                }
-                shot.update(elapsedTime);
-                shot.draw(graphicSystem.getG());
-            }
-            physicsSystem.checkCollisions();
-
-            graphicSystem.getG().setColor(Color.WHITE);
-            graphicSystem.getG().drawString("Position X: " + (Integer.toString(player.getPosX())),  10, 20);
-            graphicSystem.getG().drawString("Position Y: " + (Integer.toString(player.getPosY())),  10, 45);
-            graphicSystem.getG().drawString("Current height: " + (Integer.toString(universe.currentHeight)),  10, 60);
+            double elapsedTime = this.getLoopTime();
+            this.updateObjects(elapsedTime);
+            this.drawObjects();
+            this.handleShots(elapsedTime);
+            this.drawStats();
             graphicSystem.redraw();
             try {
                 long timeout = (lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000;
@@ -164,4 +107,88 @@ public class GameWorld
 
 
     public void setGraphicSystem(GraphicSystem p) { graphicSystem = p; }
+
+    public void drawScreenState(){
+        graphicSystem.getG().setColor(Color.BLACK);
+        graphicSystem.getG().fillRect(0,0,Utilities.WIDTH,Utilities.HEIGHT);
+        graphicSystem.draw(universe);
+        asteroidHandler.drawAll(graphicSystem.getG());
+        enemyHandler.drawAll(graphicSystem.getG());
+        player.draw(graphicSystem.getG());
+
+        for (int i = shots.size() - 1; i >=0 ; i--) {
+            PlayerShot shot = (PlayerShot) shots.get(i);
+            shot.draw(graphicSystem.getG());
+        }
+    }
+
+
+    private void drawObjects(){
+        universe.draw(graphicSystem.getG());
+        asteroidHandler.drawAll(graphicSystem.getG());
+        enemyHandler.drawAll(graphicSystem.getG());
+        player.draw(graphicSystem.getG());
+    }
+
+
+    private void updateObjects(double elapsedTime) throws IOException {
+        universe.update();
+        asteroidHandler.updateAll(elapsedTime);
+        enemyHandler.updateAll(elapsedTime);
+        player.update(elapsedTime);
+        physicsSystem.checkCollisions();
+    }
+
+    private void handleShots(double elapsedTime){
+        for (int i = shots.size() - 1; i >=0 ; i--) {
+            PlayerShot shot = (PlayerShot) shots.get(i);
+            if (shot.getPosY() < 0 || shot.toRemove) {
+                shots.remove(i);
+                continue;
+            }
+            shot.update(elapsedTime);
+            shot.draw(graphicSystem.getG());
+        }
+    }
+
+    private void drawStats() throws IOException {
+        graphicSystem.getG().drawImage(ImageIO.read((getClass().getClassLoader().getResourceAsStream("Data/frame.png"))),Utilities.WIDTH - 500,-50,null);
+        graphicSystem.getG().drawImage(ImageIO.read((getClass().getClassLoader().getResourceAsStream("Players/avatar.png"))),Utilities.WIDTH -448,20,null);
+        graphicSystem.getG().setFont(new Font("default", Font.BOLD, 16));
+        graphicSystem.getG().setColor(Color.WHITE);
+        graphicSystem.getG().drawRect(Utilities.WIDTH - 301, 20, 252,10);
+        graphicSystem.getG().setColor(Color.RED);
+        graphicSystem.getG().fillRect(Utilities.WIDTH - 300, 21, (int)(250 * ((double)(player.getHealth())/(double)(10*SessionSystem.getInstance().getUniverse().getComplexity()))),8);
+        graphicSystem.getG().setColor(Color.WHITE);
+        graphicSystem.getG().drawString("Health: " + (Integer.toString(player.getHealth())) + "/" + 10*SessionSystem.getInstance().getUniverse().getComplexity(),  Utilities.WIDTH - 300, 60);
+        graphicSystem.getG().drawString("Position X: " + (Integer.toString(player.getPosX())),  10, 20);
+        graphicSystem.getG().drawString("Position Y: " + (Integer.toString(player.getPosY())),  10, 45);
+        graphicSystem.getG().drawString("Current height: " + (Integer.toString(universe.currentHeight)),  10, 70);
+    }
+
+    private void showPauseMenu() throws IOException {
+        while (isPaused){
+            this.drawScreenState();
+            Image background = ImageIO.read((getClass().getClassLoader().getResourceAsStream("Data/background.png")));
+            graphicSystem.getG().drawImage(background.getScaledInstance(Utilities.WIDTH,Utilities.HEIGHT, Image.SCALE_SMOOTH),0,0, null);
+            Image image = ImageIO.read((getClass().getClassLoader().getResourceAsStream("Data/Pause.png")));
+            graphicSystem.getG().drawImage(image,(Utilities.WIDTH/2) - ((BufferedImage) image).getWidth()/2,Utilities.HEIGHT/2 - ((BufferedImage) image).getHeight()/2 , null);
+            graphicSystem.getG().setColor(Color.WHITE);
+            graphicSystem.getG().drawString("Press ESC to exit the game.",  (Utilities.WIDTH/2) - 500, Utilities.HEIGHT/2);
+            graphicSystem.getG().drawString("Press SPACE to continue.",  (Utilities.WIDTH/2) + 300, Utilities.HEIGHT/2);
+            graphicSystem.redraw();
+            lastLoopTime = System.nanoTime();
+
+        }
+        SessionSystem.getInstance().setGameState(GameState.RUNNING);
+    }
+
+    private double getLoopTime(){
+        long now = System.nanoTime();
+        long updateLength = now - lastLoopTime;
+        double elapsedTime = updateLength / 1_000_000_000.0;
+        lastLoopTime = now;
+        return elapsedTime;
+    }
+
 }
