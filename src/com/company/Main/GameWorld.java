@@ -49,7 +49,7 @@ public class GameWorld
         sessionSystem = SessionSystem.getInstance();
         universe = sessionSystem.getUniverse();
         asteroidHandler = new AsteroidHandler(universe.getComplexity());
-        enemyHandler = new EnemyHandler(universe.getComplexity(), universe.getBossEnemy());
+        enemyHandler = new EnemyHandler(universe.getComplexity(), universe.getBossEnemy(), universe.getLevel());
         img = ImageIO.read((getClass().getClassLoader().getResourceAsStream("Players/player_ship.png")));
         player = new Player(Utilities.WIDTH /2,Utilities.HEIGHT -(img.getHeight()+20),img.getWidth(), img.getHeight(), img);
         players.add(player);

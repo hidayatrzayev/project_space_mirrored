@@ -22,23 +22,18 @@ import org.json.simple.parser.ParseException;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class EnemyHandler {
 
     public static final int MAX_SCREEN_ENEMIES = 1;
-
-    private final List<BufferedImage> presets = new ArrayList<>(
-            Arrays.asList(
-                    ImageIO.read((getClass().getClassLoader().getResourceAsStream("Enemies/enemy_ship_1.png"))),
-                    ImageIO.read((getClass().getClassLoader().getResourceAsStream("Enemies/enemy_ship_2.png"))),
-                    ImageIO.read((getClass().getClassLoader().getResourceAsStream("Enemies/enemy_ship_3.png"))),
-                    ImageIO.read((getClass().getClassLoader().getResourceAsStream("Enemies/enemy_ship_4.png")))
-            )
-    );
+    private static final Map<Integer, List<BufferedImage>> presets = new HashMap<>();
 
     private final List<MoveStrategy> movementPatterns = new ArrayList<>(
             Arrays.asList(
@@ -58,22 +53,84 @@ public class EnemyHandler {
     );
 
     private int complexity;
+    private int currentLevel;
+    private boolean bossFight;
     private List<A_InteractableObject> enemies;
     private List<A_InteractableObject> screenEnemies;
-    private List<A_InteractableObject> enemyShots;
-    private String bossEnemyId;
-    private boolean bossFight;
+    private List<A_InteractableObject> enemyShots;;
     private BossEnemy bossEnemy;
 
 
-    public EnemyHandler(int complexity, String bossEnemyId) throws IOException {
+    static {
+        try {
+            loadPresets();
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+    }
+
+    public EnemyHandler(int complexity, String bossEnemyId, int currentLevel) {
         this.complexity = complexity;
-        this.bossEnemyId = bossEnemyId;
+        this.currentLevel = currentLevel;
+        this.bossFight = false;
         this.enemies = new ArrayList<>();
         this.screenEnemies = new ArrayList<>();
         this.enemyShots = new ArrayList<>();
-        this.bossFight = false;
-        this.bossEnemy = this.getBossEnemy();
+        this.bossEnemy = this.getBossEnemy(bossEnemyId);
+    }
+
+    private static void loadPresets() throws IOException {
+        File dir = new File("resources/Enemies");
+        for (File imageFile : Objects.requireNonNull(dir.listFiles())) {
+            int level = getPresetLevel(imageFile);
+            if (level < 0) {
+                throw new IOException("Incorrect image name pattern");
+            }
+
+            loadPresetIntoLevel(level, imageFile);
+
+            // add all presets into the 3rd level
+            if (level != 3) {
+                loadPresetIntoLevel(3, imageFile);
+            }
+        }
+    }
+
+    /**
+     * Returns the level which the preset belongs to based on its name
+     */
+    private static int getPresetLevel(File imageFile) {
+        String fileName = imageFile.getName();
+        Pattern pattern = Pattern.compile("\\d");
+        Matcher matcher = pattern.matcher(fileName);
+        if (matcher.find()) {
+            return Integer.parseInt(matcher.group(0));
+        }
+
+        return -1;
+    }
+
+    /**
+     * Adds the image preset to the corresponding level in the hash map.
+     */
+    private static void loadPresetIntoLevel(int level, File imageFile) {
+        presets.computeIfPresent(level, (key, value) -> {
+            try {
+                value.add(ImageIO.read(imageFile));
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+            return value;
+        });
+        presets.computeIfAbsent(level, (key) -> {
+            List<BufferedImage> levelPresets = new ArrayList<>();
+            try {
+                levelPresets.add(ImageIO.read(imageFile));
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+            return levelPresets;
+        });
     }
 
     /**
@@ -109,13 +166,13 @@ public class EnemyHandler {
      */
     private void respawnEnemy(Enemy enemy) {
         enemy.setPosY(-enemy.getImg().getHeight());
-        enemy.setPosX(50 + new Random().nextInt(Utilities.WIDTH - 100));
+        enemy.setPosX(new Random().nextInt(Utilities.WIDTH - 600) + 200);
     }
 
     /**
      * Gets a particular boss enemy from the JSON files depending on the level.
      */
-    private BossEnemy getBossEnemy() {
+    private BossEnemy getBossEnemy(String bossEnemyId) {
         JSONParser parser = new JSONParser();
 
         try {
@@ -125,7 +182,7 @@ public class EnemyHandler {
             while (iterator.hasNext()) {
                 JSONObject jsonObject = (JSONObject) parser.parse(iterator.next().toString());
                 String id = (String) jsonObject.get("id");
-                if (id.equals(this.bossEnemyId)) {
+                if (id.equals(bossEnemyId)) {
                     return deserializeBossEnemy(jsonObject);
                 }
             }
@@ -218,10 +275,10 @@ public class EnemyHandler {
      * and initiates a shot. The shot will appear with the probability of 5%.
      */
     private void shootAll(double elapsedTime) {
-        for (int i = 0; i < screenEnemies.size(); i++) {
-            Enemy randomEnemy = (Enemy) screenEnemies.get(i);
-            if (!randomEnemy.isExploding()) {
-                randomEnemy.shoot(enemyShots, elapsedTime);
+        for (A_InteractableObject screenEnemy : screenEnemies) {
+            Enemy currentEnemy = (Enemy) screenEnemy;
+            if (!currentEnemy.isExploding() && currentEnemy.isTimeToShoot(elapsedTime)) {
+                currentEnemy.shoot(enemyShots);
             }
         }
     }
@@ -233,8 +290,9 @@ public class EnemyHandler {
      */
     private Enemy createRandomEnemy() throws IOException {
         Random random = new Random();
-        BufferedImage enemyShipImage = this.presets.get(random.nextInt(this.presets.size()));
-        Enemy randomEnemy = new Enemy(random.nextInt(Utilities.WIDTH - 500) + 200, -enemyShipImage.getHeight(),
+        List<BufferedImage> currentLevelPresets = presets.get(currentLevel);
+        BufferedImage enemyShipImage = currentLevelPresets.get(random.nextInt(currentLevelPresets.size()));
+        Enemy randomEnemy = new Enemy(random.nextInt(Utilities.WIDTH - 600) + 200, -enemyShipImage.getHeight(),
                 enemyShipImage.getWidth(), enemyShipImage.getHeight(),
                 enemyShipImage, 2);
 
@@ -242,6 +300,7 @@ public class EnemyHandler {
         ShootStrategy shootStrategy = shootingPatterns.get(random.nextInt(shootingPatterns.size()));
         randomEnemy.setMoveStrategy(randomMoveStrategy);
         randomEnemy.setShootStrategy(shootStrategy);
+
         if (randomMoveStrategy instanceof MoveCircular) {
             randomEnemy.setSpeed(200);
         }
