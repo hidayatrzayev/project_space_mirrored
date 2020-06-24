@@ -2,8 +2,7 @@ package com.company.WorldObjects;
 
 import com.company.Services.ComplicatedMesh;
 import com.company.Movements.MoveStrategy;
-import com.company.Shootings.ShootCircle;
-import com.company.Shootings.ShootStraight;
+import com.company.Shootings.ShootDeathSpiral;
 import com.company.Shootings.ShootStrategy;
 
 import javax.imageio.ImageIO;
@@ -84,7 +83,7 @@ public class Enemy extends A_InteractableObject {
      */
     @Override
     public void collides(A_InteractableObject other) {
-        if (other instanceof PlayerShot && !(other instanceof EnemyShot) || other instanceof Player) {
+        if (other instanceof PlayerShot || other instanceof Player) {
             if (this.getBounds().intersects(other.getBounds())) {
                 if (!this.lastAttacker.contains(other)) {
                     this.damage();
@@ -105,18 +104,16 @@ public class Enemy extends A_InteractableObject {
         }
     }
 
-    public void shoot(List<A_InteractableObject> shots, double elapsedTime) {
-        if (this.isTimeToShoot(elapsedTime)) {
-            intervalAccumulation -= shootingInterval;
-            shootStrategy.shoot(this, shots);
-        }
+    public void shoot(List<A_InteractableObject> shots) {
+        intervalAccumulation -= shootingInterval;
+        shootStrategy.shoot(this, shots);
     }
 
     private void setShootingInterval() {
-        if (shootStrategy instanceof ShootStraight || shootStrategy instanceof ShootCircle) {
-            this.shootingInterval = 1;
-        } else {
+        if (shootStrategy instanceof ShootDeathSpiral) {
             this.shootingInterval = 0.01;
+        } else {
+            this.shootingInterval = 1;
         }
     }
 
@@ -129,7 +126,7 @@ public class Enemy extends A_InteractableObject {
         this.setShootingInterval();
     }
 
-    private boolean isTimeToShoot(double elapsedTime) {
+    public boolean isTimeToShoot(double elapsedTime) {
         intervalAccumulation += elapsedTime;
         return intervalAccumulation >= shootingInterval;
     }
