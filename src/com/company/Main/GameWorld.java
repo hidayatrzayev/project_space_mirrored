@@ -62,6 +62,7 @@ public class GameWorld
         int playerSpeed = 7 * (Utilities.WIDTH/1280);
         this.drawScreenState();
         inputSystem.configureInput(graphicSystem, player, playerSpeed, shots);
+
         graphicSystem.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
