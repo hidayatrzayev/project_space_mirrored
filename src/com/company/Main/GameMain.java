@@ -37,8 +37,9 @@ public class GameMain
         frame.setUndecorated(true);
         //frame.changePanel(frame.getPanel());
         int level = SessionSystem.getInstance().getLevel();
-        while(true)
+        while(SessionSystem.getInstance().getGameState() != GameState.EXIT)
         {
+//            Thread.sleep(0,1);
             if(SessionSystem.getInstance().getGameState() == GameState.MAINMENU)
             {
                 if (!frame.isVisible())
@@ -47,15 +48,15 @@ public class GameMain
                     frame.setVisible(true);
                 }
             }
-
             while (level <= SessionSystem.getInstance().getNumberOfLevels() && SessionSystem.getInstance().getGameState() == GameState.RUNNING) {
                 frame.setVisible(false);
-
                 frame.changePanel();
                 //frame.setVisible(true);
                 gameWorld = new GameWorld();
+
                 gameWorld.setGraphicSystem(frame.getPanel());
                 gameWorld.setup();
+
                 /*
                 if (!frame.isVisible()) {
                     window.setVisible(false);
