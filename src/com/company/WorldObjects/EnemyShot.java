@@ -4,7 +4,11 @@ import com.company.Services.CircleMesh;
 import com.company.Services.Utilities;
 import com.company.Shootings.ShootStrategy;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.io.IOException;
+
+import static com.company.Services.Utilities.getAnimations;
 
 public class EnemyShot extends A_InteractableObject {
 
@@ -12,11 +16,13 @@ public class EnemyShot extends A_InteractableObject {
     private double velocityY;
     private boolean toRemove;
 
-    public EnemyShot(int posX, int posY, int sizeX, int sizeY, double velocityX, double velocityY) {
+    public EnemyShot(int posX, int posY, int sizeX, int sizeY, double velocityX, double velocityY) throws IOException {
         super(posX, posY, sizeX, sizeY);
         this.velocityX = velocityX;
         this.velocityY = velocityY;
         this.toRemove = false;
+        this.explosionAnimations = getAnimations(51,51,6,8,
+                ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
         this.mesh = new CircleMesh(0, 0, ShootStrategy.SHOT_SIZE, ShootStrategy.SHOT_SIZE);
     }
 
@@ -55,8 +61,7 @@ public class EnemyShot extends A_InteractableObject {
     public void collides(A_InteractableObject a_interactableObject) {
         if (a_interactableObject instanceof Player || a_interactableObject instanceof Asteroid) {
             if (this.getBounds().intersects(a_interactableObject.getBounds())) {
-                this.destroyed = true;
-                this.toRemove = true;
+                this.exploding = true;
             }
         }
     }

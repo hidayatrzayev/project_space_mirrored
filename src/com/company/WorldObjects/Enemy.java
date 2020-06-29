@@ -104,7 +104,7 @@ public class Enemy extends A_InteractableObject {
         }
     }
 
-    public void shoot(List<A_InteractableObject> shots) {
+    public void shoot(List<A_InteractableObject> shots) throws IOException {
         intervalAccumulation -= shootingInterval;
         shootStrategy.shoot(this, shots);
     }

@@ -10,5 +10,5 @@ public interface ShootStrategy {
 
     int SHOT_SIZE = 12;
 
-    void shoot(Enemy enemy, List<A_InteractableObject> shots);
+    void shoot(Enemy enemy, List<A_InteractableObject> shots) throws IOException;
 }
