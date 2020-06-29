@@ -62,6 +62,7 @@ public class GameWorld
         int playerSpeed = 7 * (Utilities.WIDTH/1280);
         this.drawScreenState();
         inputSystem.configureInput(graphicSystem, player, playerSpeed, shots);
+
         graphicSystem.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -152,15 +153,15 @@ public class GameWorld
     }
 
     private void drawStats() throws IOException {
-        graphicSystem.getG().drawImage(ImageIO.read((getClass().getClassLoader().getResourceAsStream("Data/frame.png"))),Utilities.WIDTH - 500,-50,null);
-        graphicSystem.getG().drawImage(ImageIO.read((getClass().getClassLoader().getResourceAsStream("Players/avatar.png"))),Utilities.WIDTH -448,20,null);
+        //graphicSystem.getG().drawImage(ImageIO.read((getClass().getClassLoader().getResourceAsStream("Data/frame.png"))),Utilities.WIDTH - 500,-50,null);
+        //graphicSystem.getG().drawImage(ImageIO.read((getClass().getClassLoader().getResourceAsStream("Players/avatar.png"))),Utilities.WIDTH -448,20,null);
         graphicSystem.getG().setFont(new Font("default", Font.BOLD, 16));
         graphicSystem.getG().setColor(Color.WHITE);
-        graphicSystem.getG().drawRect(Utilities.WIDTH - 301, 20, 252,10);
+        graphicSystem.getG().drawRect(49, Utilities.HEIGHT - 21, Utilities.WIDTH - 101,11);
         graphicSystem.getG().setColor(Color.RED);
-        graphicSystem.getG().fillRect(Utilities.WIDTH - 300, 21, (int)(250 * ((double)(player.getHealth())/(double)(10*SessionSystem.getInstance().getUniverse().getComplexity()))),8);
+        graphicSystem.getG().fillRect(50, Utilities.HEIGHT - 20, (int)((Utilities.WIDTH - 100) * ((double)(player.getHealth())/(double)(10*SessionSystem.getInstance().getUniverse().getComplexity()))),10);
         graphicSystem.getG().setColor(Color.WHITE);
-        graphicSystem.getG().drawString("Health: " + (Integer.toString(player.getHealth())) + "/" + 10*SessionSystem.getInstance().getUniverse().getComplexity(),  Utilities.WIDTH - 300, 60);
+        graphicSystem.getG().drawString("Health: " + (Integer.toString(player.getHealth())) + "/" + 10*SessionSystem.getInstance().getUniverse().getComplexity(),  50, Utilities.HEIGHT - 30);
         graphicSystem.getG().drawString("Position X: " + (Integer.toString(player.getPosX())),  10, 20);
         graphicSystem.getG().drawString("Position Y: " + (Integer.toString(player.getPosY())),  10, 45);
         graphicSystem.getG().drawString("Current height: " + (Integer.toString(universe.currentHeight)),  10, 70);
