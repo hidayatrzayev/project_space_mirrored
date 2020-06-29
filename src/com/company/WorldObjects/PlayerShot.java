@@ -7,6 +7,7 @@ import com.company.Systems.BackgroundMusicPlayer;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 
 public class PlayerShot extends A_InteractableObject
@@ -68,7 +69,7 @@ public class PlayerShot extends A_InteractableObject
     }
 
     @Override
-    public void collides(A_InteractableObject a_interactableObject) {
+    public synchronized void collides(A_InteractableObject a_interactableObject) throws ExecutionException, InterruptedException {
             if (a_interactableObject instanceof Enemy || a_interactableObject instanceof Asteroid) {
                 if (this.getBounds().intersects(a_interactableObject.getBounds())) {
                         this.exploding = true;

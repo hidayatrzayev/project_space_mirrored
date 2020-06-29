@@ -4,6 +4,7 @@ import com.company.Services.ObjectMesh;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.ExecutionException;
 
 public abstract class A_InteractableObject
 {
@@ -33,7 +34,7 @@ public abstract class A_InteractableObject
 
     public abstract void update(double elapsedTime);
     public abstract void draw(Graphics gc);
-    public abstract void collides(A_InteractableObject a_interactableObject);
+    public abstract void collides(A_InteractableObject a_interactableObject) throws ExecutionException, InterruptedException;
     public ObjectMesh getBounds() { return this.mesh.getrefreshedMesh(posX, posY); }
 
     public int getPosX() {

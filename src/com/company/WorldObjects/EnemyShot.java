@@ -4,9 +4,9 @@ import com.company.Services.CircleMesh;
 import com.company.Services.Utilities;
 import com.company.Shootings.ShootStrategy;
 import com.company.Systems.BackgroundMusicPlayer;
-
 import java.awt.*;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 
 public class EnemyShot extends A_InteractableObject {
@@ -64,7 +64,7 @@ public class EnemyShot extends A_InteractableObject {
     }
 
     @Override
-    public void collides(A_InteractableObject a_interactableObject) {
+    public synchronized void collides(A_InteractableObject a_interactableObject) throws ExecutionException, InterruptedException {
         if (a_interactableObject instanceof Player || a_interactableObject instanceof Asteroid) {
             if (this.getBounds().intersects(a_interactableObject.getBounds())) {
                 this.exploding = true;
