@@ -25,10 +25,7 @@ public class GameMain
         window.setVisible(true);
 
         GameFrame frame = new GameFrame();
-
-        //Music thread
-        (new Thread((new BackgroundMusicPlayer()))).start();
-
+        (new Thread((new BackgroundMusicPlayer("resources/Audio/music.wav")))).start();
         SessionSystem.getInstance().setGameState(GameState.MAINMENU);
         //TODO OPEN MAIN MENU HERE AND GIVE A CHOICE OF START OR LOAD THE GAME
         //SessionSystem.getInstance().startNewGame();     //TODO DELETE THIS

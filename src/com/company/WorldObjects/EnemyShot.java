@@ -3,6 +3,7 @@ package com.company.WorldObjects;
 import com.company.Services.CircleMesh;
 import com.company.Services.Utilities;
 import com.company.Shootings.ShootStrategy;
+import com.company.Systems.BackgroundMusicPlayer;
 
 import java.awt.*;
 import java.io.IOException;
@@ -13,6 +14,8 @@ public class EnemyShot extends A_InteractableObject {
     private double velocityX;
     private double velocityY;
     private boolean toRemove;
+    private static final String musicFile = "resources/Audio/ShotExplosion.wav";
+    private boolean playingExplosion = false;
 
     public EnemyShot(int posX, int posY, int sizeX, int sizeY, double velocityX, double velocityY) throws IOException {
         super(posX, posY, sizeX, sizeY);
@@ -34,6 +37,12 @@ public class EnemyShot extends A_InteractableObject {
             }
             if (this.isOutVertically() || this.isOutHorizontally()) {
                 toRemove = true;
+            }
+        }
+        if(this.destroyed) {
+            if (!playingExplosion){
+                new Thread((new BackgroundMusicPlayer(musicFile))).start();
+                playingExplosion = true;
             }
         }
     }

@@ -45,7 +45,7 @@ cmake-build-*/
 
 # File-based project format
 *.iws
-*.wav
+music.wav
 
 # IntelliJ
 out/

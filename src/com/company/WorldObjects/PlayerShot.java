@@ -2,6 +2,7 @@ package com.company.WorldObjects;
 
 import com.company.Services.CircleMesh;
 import com.company.Services.Utilities;
+import com.company.Systems.BackgroundMusicPlayer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -19,6 +20,8 @@ public class PlayerShot extends A_InteractableObject
     static final int ANIMATION_COL = 3;
     static final int ANIMATION_H = 52;
     static final int ANIMATION_STEPS = 12;
+    private static final String musicFile = "resources/Audio/ShotExplosion.wav";
+    private boolean playingExplosion = false;
 
 
     public PlayerShot(int posX, int posY, int sizeX, int sizeY, BufferedImage img) throws IOException {
@@ -39,6 +42,11 @@ public class PlayerShot extends A_InteractableObject
 
             //animationStep = animationStep >= ANIMATION_STEPS ? 0 : animationStep++;
             posY -= speed;
+        }else {
+            if (!playingExplosion){
+            new Thread((new BackgroundMusicPlayer(musicFile))).start();
+            playingExplosion = true;
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import com.company.Movements.MoveStrategy;
 import com.company.Services.Utilities;
 import com.company.Shootings.ShootDeathSpiral;
 import com.company.Shootings.ShootStrategy;
+import com.company.Systems.BackgroundMusicPlayer;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -23,6 +24,8 @@ public class Enemy extends A_InteractableObject {
     protected MoveStrategy moveStrategy;
     protected ShootStrategy shootStrategy;
     protected List<A_InteractableObject> lastAttacker;
+    protected static final String musicFile = "resources/Audio/ShipExplosion.wav";
+    protected boolean playingExplosion = false;
 
     /**
      * This constructor specifies the default health of 1 and is meant to be used to create regular enemies
@@ -52,6 +55,11 @@ public class Enemy extends A_InteractableObject {
     public void update(double elapsedTime) {
         if (!exploding && !destroyed) {
             moveStrategy.move(this, speed, elapsedTime);
+        }else {
+            if (!playingExplosion){
+                new Thread((new BackgroundMusicPlayer(musicFile))).start();
+                playingExplosion = true;
+            }
         }
     }
 
