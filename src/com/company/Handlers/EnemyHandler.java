@@ -159,12 +159,10 @@ public class EnemyHandler {
      * Creates and adds the boss enemy to the screen.
      */
     private void spawnBossEnemy() {
-        if (bossEnemy != null) {
-            bossEnemy.setMoveStrategy(new MoveStraightNormal());
-            bossEnemy.setShootStrategy(new ShootCircle());
-            this.screenEnemies.add(bossEnemy);
-            this.bossFight = true;
-        }
+        bossEnemy.setMoveStrategy(new MoveStraightNormal());
+        bossEnemy.setShootStrategy(new ShootCircle());
+        this.screenEnemies.add(bossEnemy);
+        this.bossFight = true;
     }
 
     /**
