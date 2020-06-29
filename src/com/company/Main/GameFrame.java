@@ -6,6 +6,7 @@ import com.company.Systems.GraphicSystem;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class GameFrame extends JFrame
 {
@@ -14,11 +15,14 @@ public class GameFrame extends JFrame
     private CardLayout cardLayout;
     private JPanel mainPanel;
 
-    public GameFrame()
-    {
+    public GameFrame() throws IOException {
+
 
         menuPanel = new MenuPanel();
         panel = new GraphicSystem();
+
+        menuPanel.setLayout(new GridBagLayout());
+        menuPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setSize(Utilities.WIDTH,Utilities.HEIGHT);

@@ -27,7 +27,7 @@ public class GameMain
         GameFrame frame = new GameFrame();
 
         //Music thread
-        //(new Thread((new BackgroundMusicPlayer()))).start();
+        (new Thread((new BackgroundMusicPlayer()))).start();
 
         SessionSystem.getInstance().setGameState(GameState.MAINMENU);
         //TODO OPEN MAIN MENU HERE AND GIVE A CHOICE OF START OR LOAD THE GAME
@@ -39,7 +39,7 @@ public class GameMain
         int level = SessionSystem.getInstance().getLevel();
         while(SessionSystem.getInstance().getGameState() != GameState.EXIT)
         {
-//            Thread.sleep(0,1);
+            Thread.sleep(0,1);
             if(SessionSystem.getInstance().getGameState() == GameState.MAINMENU)
             {
                 if (!frame.isVisible())
@@ -51,18 +51,12 @@ public class GameMain
             while (level <= SessionSystem.getInstance().getNumberOfLevels() && SessionSystem.getInstance().getGameState() == GameState.RUNNING) {
                 frame.setVisible(false);
                 frame.changePanel();
-                //frame.setVisible(true);
+
                 gameWorld = new GameWorld();
 
                 gameWorld.setGraphicSystem(frame.getPanel());
                 gameWorld.setup();
 
-                /*
-                if (!frame.isVisible()) {
-                    window.setVisible(false);
-                    frame.setVisible(true);
-                }
-                */
 
                 gameWorld.run();
                 if (SessionSystem.getInstance().getGameState() == GameState.RUNNING) {
