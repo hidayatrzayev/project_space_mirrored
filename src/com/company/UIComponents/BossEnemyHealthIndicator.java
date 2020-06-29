@@ -1,6 +1,4 @@
-package com.company.WorldObjects;
-
-import com.company.Services.Utilities;
+package com.company.UIComponents;
 
 import java.awt.*;
 

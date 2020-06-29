@@ -4,15 +4,10 @@ import com.company.Services.CircleMesh;
 import com.company.Services.Direction;
 import com.company.Services.Utilities;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.company.Services.Utilities.getAnimations;
-
 
 
 public class Asteroid extends A_InteractableObject{
@@ -24,13 +19,13 @@ public class Asteroid extends A_InteractableObject{
     private long lastAniationLoop;
     private List<A_InteractableObject> lastAttacker;
 
-    public Asteroid(Direction direction, int speed, int posX, int posY, int sizeX, int sizeY, BufferedImage img ) throws IOException {
+    public Asteroid(Direction direction, int speed, int posX, int posY, int sizeX, int sizeY, BufferedImage img ) {
         super(posX, posY, sizeX, sizeY, img);
         this.direction = direction;
         this.speed = speed;
-        this.animations = getAnimations(50,50,2,10,img);
+        this.animations = Utilities.asteroidMovementAnimations;
         this.lastAniationLoop = System.nanoTime();
-        this.explosionAnimations = getAnimations(51,51,6,8,ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
+        this.explosionAnimations = Utilities.explosionAnimations;
         this.mesh = new CircleMesh(3,3,38,38);
         this.lastAttacker = new ArrayList<>();
     }

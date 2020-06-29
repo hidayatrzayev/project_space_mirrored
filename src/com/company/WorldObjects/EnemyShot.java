@@ -4,11 +4,9 @@ import com.company.Services.CircleMesh;
 import com.company.Services.Utilities;
 import com.company.Shootings.ShootStrategy;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.IOException;
 
-import static com.company.Services.Utilities.getAnimations;
 
 public class EnemyShot extends A_InteractableObject {
 
@@ -21,8 +19,7 @@ public class EnemyShot extends A_InteractableObject {
         this.velocityX = velocityX;
         this.velocityY = velocityY;
         this.toRemove = false;
-        this.explosionAnimations = getAnimations(51,51,6,8,
-                ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
+        this.explosionAnimations = Utilities.explosionAnimations;
         this.mesh = new CircleMesh(0, 0, ShootStrategy.SHOT_SIZE, ShootStrategy.SHOT_SIZE);
     }
 

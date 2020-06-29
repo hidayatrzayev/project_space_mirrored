@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.company.Services.Utilities.getAnimations;
-
 
 public class Player extends A_InteractableObject
 {
@@ -26,7 +24,7 @@ public class Player extends A_InteractableObject
 
     public Player(int posX, int posY, int sizeX,int sizeY, BufferedImage img) throws IOException {
         super(posX, posY, sizeX, sizeY, img);
-        this.explosionAnimations = getAnimations(51,51,6,8,ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
+        this.explosionAnimations = Utilities.explosionAnimations;
         this.mesh = new ComplicatedMesh(img);
         this.lastAttacker = new ArrayList<>();
         this.health = 10* SessionSystem.getInstance().getUniverse().getComplexity();

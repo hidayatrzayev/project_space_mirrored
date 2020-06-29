@@ -2,17 +2,16 @@ package com.company.WorldObjects;
 
 import com.company.Services.ComplicatedMesh;
 import com.company.Movements.MoveStrategy;
+import com.company.Services.Utilities;
 import com.company.Shootings.ShootDeathSpiral;
 import com.company.Shootings.ShootStrategy;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.company.Services.Utilities.getAnimations;
 
 public class Enemy extends A_InteractableObject {
 
@@ -33,7 +32,7 @@ public class Enemy extends A_InteractableObject {
         this.speed = speed;
         this.health = 1;
         this.direction = 1;
-        this.explosionAnimations = getAnimations(51,51,6,8,ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
+        this.explosionAnimations = Utilities.explosionAnimations;
         this.mesh = new ComplicatedMesh(img);
         this.lastAttacker = new ArrayList<>();
     }
