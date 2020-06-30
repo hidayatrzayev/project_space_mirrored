@@ -3,13 +3,10 @@ package com.company.WorldObjects;
 import com.company.Services.CircleMesh;
 import com.company.Services.Utilities;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import static com.company.Services.Utilities.getAnimations;
-import static java.lang.Integer.max;
 
 public class PlayerShot extends A_InteractableObject
 {
@@ -26,7 +23,7 @@ public class PlayerShot extends A_InteractableObject
 
     public PlayerShot(int posX, int posY, int sizeX, int sizeY, BufferedImage img) throws IOException {
         super(posX, posY, sizeX, sizeY, img);
-        this.explosionAnimations = getAnimations(51,51,6,8,ImageIO.read((getClass().getClassLoader().getResourceAsStream("Actions/explosion.png"))));
+        this.explosionAnimations = Utilities.explosionAnimations;
         this.mesh = new CircleMesh(10,10,25,25);
     }
 

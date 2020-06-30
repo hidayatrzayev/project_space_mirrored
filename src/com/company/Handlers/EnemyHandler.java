@@ -3,13 +3,12 @@ package com.company.Handlers;
 import com.company.Movements.*;
 import com.company.Services.BossEnemyDeserializer;
 import com.company.Services.Deserializer;
-import com.company.Services.GameState;
 import com.company.Services.Utilities;
 import com.company.Shootings.ShootCircle;
 import com.company.Shootings.ShootDeathSpiral;
 import com.company.Shootings.ShootStraight;
 import com.company.Shootings.ShootStrategy;
-import com.company.Systems.SessionSystem;
+import com.company.Systems.BackgroundMusicPlayer;
 import com.company.WorldObjects.EnemyShot;
 import com.company.WorldObjects.A_InteractableObject;
 import com.company.WorldObjects.BossEnemy;
@@ -20,7 +19,10 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import javax.imageio.ImageIO;
+import javax.swing.Timer;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileReader;
@@ -29,15 +31,18 @@ import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class EnemyHandler {
 
-    public static final int MAX_SCREEN_ENEMIES = 1;
+    public static final int MAX_SCREEN_ENEMIES = 6;
     private static final Map<Integer, List<BufferedImage>> presets = new HashMap<>();
 
     private final List<MoveStrategy> movementPatterns = new ArrayList<>(
             Arrays.asList(
+                    new MoveStraightSlow(),
                     new MoveStraightNormal(),
+                    new MoveStraightFast(),
                     new MoveSinusoidNarrow(),
                     new MoveSinusoidWide(),
                     new MoveCircular()
@@ -55,9 +60,10 @@ public class EnemyHandler {
     private int complexity;
     private int currentLevel;
     private boolean bossFight;
+    private int levelScreenEnemies;
     private List<A_InteractableObject> enemies;
     private List<A_InteractableObject> screenEnemies;
-    private List<A_InteractableObject> enemyShots;;
+    private List<A_InteractableObject> enemyShots;
     private BossEnemy bossEnemy;
 
 
@@ -73,6 +79,7 @@ public class EnemyHandler {
         this.complexity = complexity;
         this.currentLevel = currentLevel;
         this.bossFight = false;
+        this.levelScreenEnemies = MAX_SCREEN_ENEMIES / complexity;
         this.enemies = new ArrayList<>();
         this.screenEnemies = new ArrayList<>();
         this.enemyShots = new ArrayList<>();
@@ -139,10 +146,11 @@ public class EnemyHandler {
      * @param amount - total amount of enemies in the level
      */
     public void spawnEnemies(int amount) throws IOException {
-        for (int i = 0; i < MAX_SCREEN_ENEMIES; i++) {
+        levelScreenEnemies = Math.min(levelScreenEnemies, amount);
+        for (int i = 0; i < levelScreenEnemies; i++) {
             this.screenEnemies.add(createRandomEnemy());
         }
-        for (int i = 0; i < amount - MAX_SCREEN_ENEMIES; i++) {
+        for (int i = 0; i < amount - levelScreenEnemies; i++) {
             this.enemies.add(createRandomEnemy());
         }
     }
@@ -151,12 +159,10 @@ public class EnemyHandler {
      * Creates and adds the boss enemy to the screen.
      */
     private void spawnBossEnemy() {
-        if (bossEnemy != null) {
-            bossEnemy.setMoveStrategy(new MoveStraightNormal());
-            bossEnemy.setShootStrategy(new ShootCircle());
-            this.screenEnemies.add(bossEnemy);
-            this.bossFight = true;
-        }
+        bossEnemy.setMoveStrategy(new MoveStraightNormal());
+        bossEnemy.setShootStrategy(new ShootCircle());
+        this.screenEnemies.add(bossEnemy);
+        this.bossFight = true;
     }
 
     /**
@@ -233,7 +239,12 @@ public class EnemyHandler {
             }
         }
 
-        this.shootAll(elapsedTime);
+        try {
+            this.shootAll(elapsedTime);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+
         this.updateEnemies(elapsedTime);
         this.updateEnemyShots(elapsedTime);
     }
@@ -274,7 +285,7 @@ public class EnemyHandler {
      * Randomly selects an enemy from the list of enemies currently shown on the screen
      * and initiates a shot. The shot will appear with the probability of 5%.
      */
-    private void shootAll(double elapsedTime) {
+    private void shootAll(double elapsedTime) throws IOException {
         for (A_InteractableObject screenEnemy : screenEnemies) {
             Enemy currentEnemy = (Enemy) screenEnemy;
             if (!currentEnemy.isExploding() && currentEnemy.isTimeToShoot(elapsedTime)) {
@@ -297,7 +308,9 @@ public class EnemyHandler {
                 enemyShipImage, 2);
 
         MoveStrategy randomMoveStrategy = movementPatterns.get(random.nextInt(movementPatterns.size()));
-        ShootStrategy shootStrategy = shootingPatterns.get(random.nextInt(shootingPatterns.size()));
+
+        List<ShootStrategy> filteredShootings = this.filterShootingPatterns();
+        ShootStrategy shootStrategy = shootingPatterns.get(random.nextInt(filteredShootings.size()));
         randomEnemy.setMoveStrategy(randomMoveStrategy);
         randomEnemy.setShootStrategy(shootStrategy);
 
@@ -306,6 +319,17 @@ public class EnemyHandler {
         }
 
         return randomEnemy;
+    }
+
+    /**
+     * Filters the shooting patterns according to the complexity of the level and
+     * returns a list of acceptable shooting patterns for the current level
+     */
+    private List<ShootStrategy> filterShootingPatterns() {
+        return this.shootingPatterns
+                .stream()
+                .filter(pattern -> this.shootingPatterns.indexOf(pattern) + 1 <= this.complexity)
+                .collect(Collectors.toList());
     }
 
     /**
