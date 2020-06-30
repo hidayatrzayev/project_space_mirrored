@@ -35,6 +35,14 @@ public class Player extends A_InteractableObject
         this.health = 10* SessionSystem.getInstance().getUniverse().getComplexity();
     }
 
+    public Player(int posX, int posY, int sizeX,int sizeY, BufferedImage img, int health) throws IOException {
+        super(posX, posY, sizeX, sizeY, img);
+        this.explosionAnimations = Utilities.explosionAnimations;
+        this.mesh = new ComplicatedMesh(img);
+        this.lastAttacker = new ArrayList<>();
+        this.health = health;
+    }
+
     @Override
     public void update(double elapsedTime)
     {
@@ -109,6 +117,7 @@ public class Player extends A_InteractableObject
                 ",\"posY\":\"" + posY + '\"' +
                 ",\"sizeX\":\"" + sizeX + '\"' +
                 ",\"sizeY\":\"" + sizeY+ '\"' +
+                ",\"health\":\"" + health+ '\"' +
                 '}';
     }
 

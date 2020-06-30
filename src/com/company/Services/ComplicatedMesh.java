@@ -22,7 +22,6 @@ public class ComplicatedMesh<T> implements ObjectMesh<T> {
     public ComplicatedMesh(BufferedImage image) {
         this.image = image;
         this.futurePolygon = executor.submit(() -> getPolygonOutline(image));
-//        this.mesh = getPolygonOutline(image);
     }
 
 

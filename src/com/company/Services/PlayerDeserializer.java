@@ -14,7 +14,8 @@ public class PlayerDeserializer implements Deserializer<Player> {
             int posY = Integer.valueOf((String)jsonObject.get("posY"));
             int sizeX = Integer.valueOf((String)jsonObject.get("sizeX"));
             int sizeY = Integer.valueOf((String)jsonObject.get("sizeY"));
-            player = new Player(posX, posY, sizeX, sizeY, ImageIO.read((getClass().getClassLoader().getResourceAsStream("Players/player_ship.png"))));
+            int health = Integer.valueOf((String)jsonObject.get("health"));
+            player = new Player(posX, posY, sizeX, sizeY, ImageIO.read((getClass().getClassLoader().getResourceAsStream("Players/player_ship.png"))), health);
         } catch(Exception e) {
             e.printStackTrace();
         }
