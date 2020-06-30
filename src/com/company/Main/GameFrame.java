@@ -40,6 +40,13 @@ public class GameFrame extends JFrame
 
     }
 
+    public void changeToMenu()
+    {
+        this.setContentPane(menuPanel);
+        this.validate();
+        this.setVisible(true);
+    }
+
 
 
 

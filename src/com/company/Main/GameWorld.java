@@ -70,10 +70,43 @@ public class GameWorld
                 int key = e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == KeyEvent.VK_ESCAPE ? e.getKeyCode(): 0;
                     if (key == KeyEvent.VK_SPACE){
                         isPaused = !isPaused;
-                        SessionSystem.getInstance().setGameState(GameState.PAUSED);
-                }else if(isPaused && key == KeyEvent.VK_ESCAPE) {
-                        System.exit(0);
-                        SessionSystem.getInstance().setGameState(GameState.MAINMENU);
+                        switch (SessionSystem.getInstance().getGameState())
+                        {
+                            case RUNNING:
+                                SessionSystem.getInstance().setGameState(GameState.PAUSED);
+                                break;
+                            case PAUSED:
+                                SessionSystem.getInstance().setGameState(GameState.RUNNING);
+                                break;
+                            case INTMENU:
+                                SessionSystem.getInstance().setGameState(GameState.RUNNING);
+                                break;
+                        }
+                        /*
+                        if(isPaused)
+                            SessionSystem.getInstance().setGameState(GameState.RUNNING);
+                        else
+                            SessionSystem.getInstance().setGameState(GameState.PAUSED);
+                            */
+
+
+                }else if((SessionSystem.getInstance().getGameState() == GameState.PAUSED
+                            || SessionSystem.getInstance().getGameState() == GameState.INTMENU) && key == KeyEvent.VK_ESCAPE) {
+                        //System.exit(0);
+                        //isPaused = false;
+                        //SessionSystem.getInstance().setGameState(GameState.MAINMENU);
+
+                        switch (SessionSystem.getInstance().getGameState())
+                        {
+                            case PAUSED:
+                                SessionSystem.getInstance().setGameState(GameState.MAINMENU);
+                                break;
+                            case INTMENU:
+                                System.out.println("Exit");
+                                SessionSystem.getInstance().setGameState(GameState.MAINMENU);
+                                break;
+
+                        }
                     }
             }
         });
@@ -85,7 +118,7 @@ public class GameWorld
         enemyHandler.spawnEnemies(universe.getNumberOfEnemies());
         worldObjects.add(enemyHandler.getScreenEnemies());
         worldObjects.add(enemyHandler.getEnemyShots());
-        while(!enemyHandler.fightIsOver() && (sessionSystem.getGameState() == GameState.RUNNING || sessionSystem.getGameState() == GameState.PAUSED) )
+        while(!enemyHandler.fightIsOver() && (sessionSystem.getGameState() == GameState.RUNNING  || sessionSystem.getGameState() == GameState.PAUSED))
         {
             if (isPaused){
                 this.showPauseMenu();
@@ -96,13 +129,27 @@ public class GameWorld
             this.handleShots(elapsedTime);
             this.drawStats();
             graphicSystem.redraw();
+            //SessionSystem.getInstance().setGameState(GameState.INTMENU);
             try {
                 long timeout = (lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000;
                 if(timeout > 0)
-                Thread.sleep(timeout);
+                    Thread.sleep(timeout);
             } finally {
                 SessionSystem.getInstance().setPlayerState(player);
-                //TODO
+
+            }
+        }
+        while(SessionSystem.getInstance().getGameState() == GameState.INTMENU)
+        {
+            double elapsedTime = this.getLoopTime();
+            this.showInterMenu();
+            try {
+                long timeout = (lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000;
+                if(timeout > 0)
+                    Thread.sleep(timeout);
+            } finally
+            {
+
             }
         }
     }
@@ -182,7 +229,22 @@ public class GameWorld
             lastLoopTime = System.nanoTime();
 
         }
-        SessionSystem.getInstance().setGameState(GameState.RUNNING);
+
+    }
+
+    private void showInterMenu() throws IOException
+    {
+        this.drawScreenState();
+        universe.update();
+        Image background = ImageIO.read((getClass().getClassLoader().getResourceAsStream("Data/background.png")));
+        graphicSystem.getG().drawImage(background.getScaledInstance(Utilities.WIDTH,Utilities.HEIGHT, Image.SCALE_SMOOTH),0,0, null);
+        graphicSystem.getG().setColor(Color.WHITE);
+        graphicSystem.getG().drawString("Score : ",  (Utilities.WIDTH/2) - 200, Utilities.HEIGHT/2); //TODO Add score variable
+        graphicSystem.getG().drawString("Press SPACE to continue to the next level",  (Utilities.WIDTH/2) - 200, Utilities.HEIGHT/2 + 400);
+        graphicSystem.getG().drawString("Press ESC exit",  (Utilities.WIDTH/2) - 100 , Utilities.HEIGHT/2 + 450);
+        graphicSystem.redraw();
+        lastLoopTime = System.nanoTime();
+
     }
 
     private double getLoopTime(){

@@ -3,6 +3,7 @@ package com.company.Main;
 import com.company.Services.GameState;
 import com.company.Services.Utilities;
 import com.company.Systems.BackgroundMusicPlayer;
+import com.company.Systems.GraphicSystem;
 import com.company.Systems.InputSystem;
 import com.company.Systems.SessionSystem;
 
@@ -32,6 +33,9 @@ public class GameMain
         int level = SessionSystem.getInstance().getLevel();
         while(SessionSystem.getInstance().getGameState() != GameState.EXIT)
         {
+            if(frame.getContentPane() instanceof GraphicSystem)
+                frame.changeToMenu();
+
             Thread.sleep(0,1);
             if(SessionSystem.getInstance().getGameState() == GameState.MAINMENU)
             {

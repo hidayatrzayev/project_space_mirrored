@@ -1,7 +1,9 @@
 package com.company.Main;
 
 
+import com.company.Services.GameState;
 import com.company.Services.Utilities;
+import com.company.Systems.SessionSystem;
 import com.company.WorldObjects.Star;
 
 import javax.imageio.ImageIO;
@@ -53,7 +55,6 @@ public class Universe {
     //= ImageIO.read((getClass().getClassLoader().getResourceAsStream("resources/level1.jpg"))).getScaledInstance(1280, 720, Image.SCALE_SMOOTH)
     public void update()
     {
-        posY = posY;
 
         for (int i = 0; i < stars.size(); i++)
         {
@@ -81,6 +82,8 @@ public class Universe {
             gc.drawRect(s.posX, s.posY, 1, 1);
         }
     }
+
+
 
     public int getComplexity() {
         return complexity;
