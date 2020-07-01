@@ -6,6 +6,7 @@ import com.company.Services.Utilities;
 import com.company.Shootings.ShootDeathSpiral;
 import com.company.Shootings.ShootStrategy;
 import com.company.Systems.BackgroundMusicPlayer;
+import com.company.Systems.SessionSystem;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -108,6 +109,11 @@ public class Enemy extends A_InteractableObject {
     public void damage() {
         health--;
         if (health == 0) {
+            if (this instanceof Enemy && !(this instanceof BossEnemy)){
+                SessionSystem.getInstance().setCurrentScore(100);
+            }else {
+                SessionSystem.getInstance().setCurrentScore(1000);
+            }
             exploding = true;
         }
     }

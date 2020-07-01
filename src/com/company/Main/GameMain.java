@@ -57,9 +57,8 @@ public class GameMain
                 //TODO e.g menuHandler.open(SessionSystem.getInstance().getGameState())....//TODO
                 //TODO BUT MEANWHILE REPEAT LEVEL:
                 if (SessionSystem.getInstance().getGameState() == GameState.DEAD) {  //TODO DELETE THIS
-                    level--;                                                        //TODO DELETE THIS
-                    SessionSystem.getInstance().setGameState(GameState.RUNNING);    //TODO DELETE THIS
-                }                                                                   //TODO DELETE THIS
+                    SessionSystem.getInstance().resttart();                          //TODO DELETE THIS
+                }
             }
             if (SessionSystem.getInstance().getGameState() == GameState.RUNNING) {
                 SessionSystem.getInstance().setGameState(GameState.FINISH);
