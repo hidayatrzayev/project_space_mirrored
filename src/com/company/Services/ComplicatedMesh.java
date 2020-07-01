@@ -4,18 +4,24 @@ import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.FlatteningPathIterator;
 import java.awt.image.BufferedImage;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class ComplicatedMesh<T> implements ObjectMesh<T> {
 
 
     BufferedImage image;
     private Polygon mesh;
+    private Future<Polygon> futurePolygon;
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
     private int posX;
     private int posY;
 
     public ComplicatedMesh(BufferedImage image) {
         this.image = image;
-        this.mesh = getPolygonOutline(image);
+        this.futurePolygon = executor.submit(() -> getPolygonOutline(image));
     }
 
 
@@ -38,13 +44,21 @@ public class ComplicatedMesh<T> implements ObjectMesh<T> {
 
 
     public ObjectMesh getrefreshedMesh(int positionX, int positionY){
+        if (this.mesh == null) {
+            try {
+                this.mesh = futurePolygon.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
         mesh.translate(positionX - posX, positionY - posY);
         this.posY = positionY;
         this.posX = positionX;
         return this;
     }
 
-    public boolean intersects(ObjectMesh other) {
+    public boolean intersects(ObjectMesh other) throws ExecutionException, InterruptedException {
+        if (this.mesh == null) this.mesh = futurePolygon.get();
         Area thisMesh = new Area(this.mesh);
         thisMesh.intersect(new Area(other.getMesh()));
         return !thisMesh.isEmpty();

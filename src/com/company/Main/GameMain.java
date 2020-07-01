@@ -25,17 +25,10 @@ public class GameMain
         window.setVisible(true);
 
         GameFrame frame = new GameFrame();
-
-        //Music thread
-        (new Thread((new BackgroundMusicPlayer()))).start();
-
+        (new Thread((new BackgroundMusicPlayer("resources/Audio/music.wav")))).start();
         SessionSystem.getInstance().setGameState(GameState.MAINMENU);
-        //TODO OPEN MAIN MENU HERE AND GIVE A CHOICE OF START OR LOAD THE GAME
-        //SessionSystem.getInstance().startNewGame();     //TODO DELETE THIS
-        //SessionSystem.getInstance().loadProgress();     //TODO DELETE THIS
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setUndecorated(true);
-        //frame.changePanel(frame.getPanel());
         int level = SessionSystem.getInstance().getLevel();
         while(SessionSystem.getInstance().getGameState() != GameState.EXIT)
         {
@@ -49,15 +42,11 @@ public class GameMain
                 }
             }
             while (level <= SessionSystem.getInstance().getNumberOfLevels() && SessionSystem.getInstance().getGameState() == GameState.RUNNING) {
-                frame.setVisible(false);
-                frame.changePanel();
 
                 gameWorld = new GameWorld();
-
                 gameWorld.setGraphicSystem(frame.getPanel());
                 gameWorld.setup();
-
-
+                frame.changePanel();
                 gameWorld.run();
                 if (SessionSystem.getInstance().getGameState() == GameState.RUNNING) {
                     SessionSystem.getInstance().nextLevel();
@@ -68,9 +57,8 @@ public class GameMain
                 //TODO e.g menuHandler.open(SessionSystem.getInstance().getGameState())....//TODO
                 //TODO BUT MEANWHILE REPEAT LEVEL:
                 if (SessionSystem.getInstance().getGameState() == GameState.DEAD) {  //TODO DELETE THIS
-                    level--;                                                        //TODO DELETE THIS
-                    SessionSystem.getInstance().setGameState(GameState.RUNNING);    //TODO DELETE THIS
-                }                                                                   //TODO DELETE THIS
+                    SessionSystem.getInstance().resttart();                          //TODO DELETE THIS
+                }
             }
             if (SessionSystem.getInstance().getGameState() == GameState.RUNNING) {
                 SessionSystem.getInstance().setGameState(GameState.FINISH);

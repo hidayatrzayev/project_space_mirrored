@@ -81,6 +81,7 @@ public class GameWorld
     }
 
     public void run() throws InterruptedException, IOException {
+        graphicSystem.redraw();
         enemyHandler.spawnEnemies(universe.getNumberOfEnemies());
         worldObjects.add(enemyHandler.getScreenEnemies());
         worldObjects.add(enemyHandler.getEnemyShots());

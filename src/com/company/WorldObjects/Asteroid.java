@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 
 public class Asteroid extends A_InteractableObject{
@@ -81,7 +82,7 @@ public class Asteroid extends A_InteractableObject{
     }
 
     @Override
-    public void collides(A_InteractableObject a_interactableObject) {
+    public synchronized void collides(A_InteractableObject a_interactableObject) throws ExecutionException, InterruptedException {
             if (a_interactableObject instanceof Player || a_interactableObject instanceof PlayerShot) {
                 if (this.getBounds().intersects(a_interactableObject.getBounds())) {
                         this.exploding = true;

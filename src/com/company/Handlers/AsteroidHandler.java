@@ -46,14 +46,14 @@ public class AsteroidHandler {
             int posX = 0;
             int posY = 0;
             if (coin == 1) {
-                posY = rand.nextInt(Utilities.HEIGHT);
+                posY = rand.nextInt(Utilities.HEIGHT/2);
             } else if (coin == 2) {
                 posX = rand.nextInt(Utilities.WIDTH /2);
             } else if (coin == 3) {
-                posX = rand.nextInt(Utilities.WIDTH /2) + Utilities.WIDTH;
+                posX = rand.nextInt(Utilities.WIDTH /2) + Utilities.WIDTH/2;
             } else if (coin == 4) {
                 posX = Utilities.WIDTH;
-                posY = rand.nextInt(Utilities.HEIGHT);
+                posY = rand.nextInt(Utilities.HEIGHT/2);
             }
 
             asteroids.add(new Asteroid(direction, speed, posX, posY, 50, 50, image));

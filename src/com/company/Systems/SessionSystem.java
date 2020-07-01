@@ -21,6 +21,7 @@ public class SessionSystem {
     private Universe universe;
     HashMap<String, Universe> levels = new HashMap<>();
     private GameState gameState;
+    private int totalScore;
 
 
     private static SessionSystem ourInstance = new SessionSystem();
@@ -41,9 +42,15 @@ public class SessionSystem {
         return currentScore;
     }
 
-    public void setCurrentScore(int levelScore) {
-        this.currentScore += levelScore;
+    public void setCurrentScore(int killScore) {
+        this.currentScore += killScore;
     }
+
+    public int getCurrentLevel() { return currentLevel; }
+
+    public void setTotalScore(int levelScore) { this.totalScore += levelScore; }
+
+    public int getTotalScore() { return totalScore; }
 
     public int getLevel() {
         return currentLevel;
@@ -75,6 +82,7 @@ public class SessionSystem {
         return "{" +
                 "\"username\":\"" + username + '\"' +
                 ",\"currentScore\":\"" + currentScore + "\"" +
+                ",\"totalScore\":\"" + totalScore + "\"" +
                 ",\"currentLevel\":\"" + currentLevel + "\"" +
                 ",\"playerState\":" + playerState.toString() +
                 ",\"universe\":" + universe.toString() +
@@ -109,17 +117,22 @@ public class SessionSystem {
 
     public void startNewGame(){
         this.parseLevels();
-        currentLevel = 1;
-        universe = levels.get(String.valueOf(currentLevel));
-        currentScore = 0;
+        this.currentLevel = 1;
+        this.universe = levels.get(String.valueOf(currentLevel));
+        this.currentScore = 0;
         this.gameState = GameState.RUNNING;
     }
 
     public void nextLevel(){
         this.currentLevel++;
         this.universe = levels.get(String.valueOf(currentLevel));
+        this.totalScore += this.currentScore;
     }
 
+    public void resttart(){
+        this.currentScore = 0;
+        this.gameState = GameState.RUNNING;
+    }
 
     private Universe deserializeUniverse(JSONObject jsonObject){
         Deserializer deserializer = new UniverseDeserializer();

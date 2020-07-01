@@ -5,18 +5,18 @@ import java.io.File;
 
 public class BackgroundMusicPlayer implements Runnable
 {
-    //private String musicFile;
+    private String musicFile;
 
-    public BackgroundMusicPlayer()
+    public BackgroundMusicPlayer(String musicFile)
     {
-
+        this.musicFile = musicFile;
     }
 
     private void playSound()
     {
         try
         {
-            File soundFile = new File("resources/Audio/music.wav");
+            File soundFile = new File(this.musicFile);
             AudioInputStream ais = AudioSystem.getAudioInputStream(soundFile);
             AudioFormat format = ais.getFormat();
             DataLine.Info info  = new DataLine.Info(Clip.class, format);

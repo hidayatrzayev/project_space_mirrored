@@ -5,12 +5,15 @@ import com.company.Movements.MoveStrategy;
 import com.company.Services.Utilities;
 import com.company.Shootings.ShootDeathSpiral;
 import com.company.Shootings.ShootStrategy;
+import com.company.Systems.BackgroundMusicPlayer;
+import com.company.Systems.SessionSystem;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 
 public class Enemy extends A_InteractableObject {
@@ -23,6 +26,8 @@ public class Enemy extends A_InteractableObject {
     protected MoveStrategy moveStrategy;
     protected ShootStrategy shootStrategy;
     protected List<A_InteractableObject> lastAttacker;
+    protected static final String musicFile = "resources/Audio/ShipExplosion.wav";
+    protected boolean playingExplosion = false;
 
     /**
      * This constructor specifies the default health of 1 and is meant to be used to create regular enemies
@@ -52,6 +57,11 @@ public class Enemy extends A_InteractableObject {
     public void update(double elapsedTime) {
         if (!exploding && !destroyed) {
             moveStrategy.move(this, speed, elapsedTime);
+        }else {
+            if (!playingExplosion){
+                new Thread((new BackgroundMusicPlayer(musicFile))).start();
+                playingExplosion = true;
+            }
         }
     }
 
@@ -81,7 +91,7 @@ public class Enemy extends A_InteractableObject {
      * @return {@code true} if two objects collide, otherwise {@code false}.
      */
     @Override
-    public void collides(A_InteractableObject other) {
+    public synchronized void collides(A_InteractableObject other) throws ExecutionException, InterruptedException {
         if (other instanceof PlayerShot || other instanceof Player) {
             if (this.getBounds().intersects(other.getBounds())) {
                 if (!this.lastAttacker.contains(other)) {
@@ -99,6 +109,11 @@ public class Enemy extends A_InteractableObject {
     public void damage() {
         health--;
         if (health == 0) {
+            if (this instanceof Enemy && !(this instanceof BossEnemy)){
+                SessionSystem.getInstance().setCurrentScore(100);
+            }else {
+                SessionSystem.getInstance().setCurrentScore(1000);
+            }
             exploding = true;
         }
     }

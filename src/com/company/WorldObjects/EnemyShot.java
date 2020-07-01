@@ -3,9 +3,10 @@ package com.company.WorldObjects;
 import com.company.Services.CircleMesh;
 import com.company.Services.Utilities;
 import com.company.Shootings.ShootStrategy;
-
+import com.company.Systems.BackgroundMusicPlayer;
 import java.awt.*;
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 
 public class EnemyShot extends A_InteractableObject {
@@ -13,6 +14,8 @@ public class EnemyShot extends A_InteractableObject {
     private double velocityX;
     private double velocityY;
     private boolean toRemove;
+    private static final String musicFile = "resources/Audio/ShotExplosion.wav";
+    private boolean playingExplosion = false;
 
     public EnemyShot(int posX, int posY, int sizeX, int sizeY, double velocityX, double velocityY) throws IOException {
         super(posX, posY, sizeX, sizeY);
@@ -36,6 +39,12 @@ public class EnemyShot extends A_InteractableObject {
                 toRemove = true;
             }
         }
+        if(this.destroyed) {
+            if (!playingExplosion){
+                new Thread((new BackgroundMusicPlayer(musicFile))).start();
+                playingExplosion = true;
+            }
+        }
     }
 
     @Override
@@ -55,7 +64,7 @@ public class EnemyShot extends A_InteractableObject {
     }
 
     @Override
-    public void collides(A_InteractableObject a_interactableObject) {
+    public synchronized void collides(A_InteractableObject a_interactableObject) throws ExecutionException, InterruptedException {
         if (a_interactableObject instanceof Player || a_interactableObject instanceof Asteroid) {
             if (this.getBounds().intersects(a_interactableObject.getBounds())) {
                 this.exploding = true;
