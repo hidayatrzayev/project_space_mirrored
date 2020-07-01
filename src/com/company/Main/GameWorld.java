@@ -229,7 +229,7 @@ public class GameWorld
         Image background = ImageIO.read((getClass().getClassLoader().getResourceAsStream("Data/background.png")));
         graphicSystem.getG().drawImage(background.getScaledInstance(Utilities.WIDTH,Utilities.HEIGHT, Image.SCALE_SMOOTH),0,0, null);
         graphicSystem.getG().setColor(Color.WHITE);
-        graphicSystem.getG().drawString("Score : ",  (Utilities.WIDTH/2) - 200, Utilities.HEIGHT/2); //TODO Add score variable
+        graphicSystem.getG().drawString("Score : " + SessionSystem.getInstance().getCurrentScore(),  (Utilities.WIDTH/2) - 200, Utilities.HEIGHT/2); //TODO Add score variable
         graphicSystem.getG().drawString("Press SPACE to continue to the next level",  (Utilities.WIDTH/2) - 200, Utilities.HEIGHT/2 + 400);
         graphicSystem.getG().drawString("Press ESC exit",  (Utilities.WIDTH/2) - 100 , Utilities.HEIGHT/2 + 450);
         graphicSystem.redraw();
