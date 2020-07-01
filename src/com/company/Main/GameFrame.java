@@ -34,6 +34,7 @@ public class GameFrame extends JFrame
     public void changePanel()
     {
         this.setVisible(false);
+        panel = new GraphicSystem();
         this.setContentPane(panel);
         this.validate();
         this.setVisible(true);

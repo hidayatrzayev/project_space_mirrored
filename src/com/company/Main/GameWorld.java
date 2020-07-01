@@ -41,7 +41,6 @@ public class GameWorld
     private ArrayList<A_InteractableObject> enemies;
     private List<A_InteractableObject> players = new ArrayList<>();
     private EnemyHandler enemyHandler;
-    private boolean isPaused = false;
 
 
     public void setup() throws IOException
@@ -69,7 +68,7 @@ public class GameWorld
                super.keyPressed(e);
                 int key = e.getKeyCode() == KeyEvent.VK_SPACE || e.getKeyCode() == KeyEvent.VK_ESCAPE ? e.getKeyCode(): 0;
                     if (key == KeyEvent.VK_SPACE){
-                        isPaused = !isPaused;
+                        //isPaused = !isPaused;
                         switch (SessionSystem.getInstance().getGameState())
                         {
                             case RUNNING:
@@ -82,19 +81,12 @@ public class GameWorld
                                 SessionSystem.getInstance().setGameState(GameState.RUNNING);
                                 break;
                         }
-                        /*
-                        if(isPaused)
-                            SessionSystem.getInstance().setGameState(GameState.RUNNING);
-                        else
-                            SessionSystem.getInstance().setGameState(GameState.PAUSED);
-                            */
 
+                    }
+                    else if((SessionSystem.getInstance().getGameState() == GameState.PAUSED
+                            || SessionSystem.getInstance().getGameState() == GameState.INTMENU) && key == KeyEvent.VK_ESCAPE)
+                    {
 
-                }else if((SessionSystem.getInstance().getGameState() == GameState.PAUSED
-                            || SessionSystem.getInstance().getGameState() == GameState.INTMENU) && key == KeyEvent.VK_ESCAPE) {
-                        //System.exit(0);
-                        //isPaused = false;
-                        //SessionSystem.getInstance().setGameState(GameState.MAINMENU);
 
                         switch (SessionSystem.getInstance().getGameState())
                         {
@@ -105,7 +97,6 @@ public class GameWorld
                                 System.out.println("Exit");
                                 SessionSystem.getInstance().setGameState(GameState.MAINMENU);
                                 break;
-
                         }
                     }
             }
@@ -120,7 +111,8 @@ public class GameWorld
         worldObjects.add(enemyHandler.getEnemyShots());
         while(!enemyHandler.fightIsOver() && (sessionSystem.getGameState() == GameState.RUNNING  || sessionSystem.getGameState() == GameState.PAUSED))
         {
-            if (isPaused){
+            if (SessionSystem.getInstance().getGameState() == GameState.PAUSED)
+            {
                 this.showPauseMenu();
             }
             double elapsedTime = this.getLoopTime();
@@ -201,8 +193,6 @@ public class GameWorld
     }
 
     private void drawStats() throws IOException {
-        //graphicSystem.getG().drawImage(ImageIO.read((getClass().getClassLoader().getResourceAsStream("Data/frame.png"))),Utilities.WIDTH - 500,-50,null);
-        //graphicSystem.getG().drawImage(ImageIO.read((getClass().getClassLoader().getResourceAsStream("Players/avatar.png"))),Utilities.WIDTH -448,20,null);
         graphicSystem.getG().setFont(new Font("default", Font.BOLD, 16));
         graphicSystem.getG().setColor(Color.WHITE);
         graphicSystem.getG().drawRect(49, Utilities.HEIGHT - 21, Utilities.WIDTH - 101,11);
@@ -216,7 +206,7 @@ public class GameWorld
     }
 
     private void showPauseMenu() throws IOException {
-        while (isPaused){
+        while (SessionSystem.getInstance().getGameState() == GameState.PAUSED) {
             this.drawScreenState();
             Image background = ImageIO.read((getClass().getClassLoader().getResourceAsStream("Data/background.png")));
             graphicSystem.getG().drawImage(background.getScaledInstance(Utilities.WIDTH,Utilities.HEIGHT, Image.SCALE_SMOOTH),0,0, null);
