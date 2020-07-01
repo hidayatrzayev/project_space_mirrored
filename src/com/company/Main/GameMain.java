@@ -48,9 +48,10 @@ public class GameMain
             while (level <= SessionSystem.getInstance().getNumberOfLevels() && SessionSystem.getInstance().getGameState() == GameState.RUNNING) {
 
                 gameWorld = new GameWorld();
+                frame.changePanel();
                 gameWorld.setGraphicSystem(frame.getPanel());
                 gameWorld.setup();
-                frame.changePanel();
+
                 gameWorld.run();
                 if (SessionSystem.getInstance().getGameState() == GameState.RUNNING) {
                     SessionSystem.getInstance().nextLevel();
