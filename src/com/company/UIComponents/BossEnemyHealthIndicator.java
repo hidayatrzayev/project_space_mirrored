@@ -4,13 +4,12 @@ import java.awt.*;
 
 public class BossEnemyHealthIndicator {
 
-    public static final Color FILL_COLOR = Color.RED;
     public static final Color BORDER_COLOR = Color.WHITE;
     public static final int WIDTH = 100;
     public static final int HEIGHT = 10;
     public static final int POS_Y_MARGIN = 20;
     public static final int BORDER_THICKNESS = 16;
-    public static final int FILL_PADDING = 2;
+    public static final int FILL_PADDING = 1;
 
     private int totalHealth;
     private int posX;
@@ -30,7 +29,7 @@ public class BossEnemyHealthIndicator {
         gc.setFont(new Font("default", Font.BOLD, BORDER_THICKNESS));
         gc.setColor(BORDER_COLOR);
         gc.drawRect(posX, posY, WIDTH, HEIGHT);
-        gc.setColor(FILL_COLOR);
+        gc.setColor(this.calculateFillColor(currentHealth));
         gc.fillRect(posX + FILL_PADDING, posY + FILL_PADDING,
                 this.calculateFillWidth(currentHealth), HEIGHT - FILL_PADDING);
     }
@@ -40,7 +39,16 @@ public class BossEnemyHealthIndicator {
         this.posY = bossPosY + this.bossSizeY + POS_Y_MARGIN;
     }
 
+    private Color calculateFillColor(int currentHealth) {
+        float healthRatio = (float) currentHealth / totalHealth;
+        int greenTone = Math.round(255 * healthRatio);
+        int redTone = Math.round(255 / healthRatio - 255);
+        redTone = Math.min(redTone, 255);
+
+        return new Color(redTone, greenTone, 0);
+    }
+
     private int calculateFillWidth(int currentHealth) {
-        return Math.round((WIDTH - FILL_PADDING * 2) * ((float) currentHealth / totalHealth));
+        return (int) ((WIDTH - FILL_PADDING) * ((float) currentHealth / totalHealth));
     }
 }
