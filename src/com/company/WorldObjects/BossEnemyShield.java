@@ -8,9 +8,9 @@ import java.util.concurrent.ExecutionException;
 public class BossEnemyShield extends A_InteractableObject {
 
     public static final Color SHIELD_COLOR = new Color(0.5f, 0.5f, 0.5f, 0.2f);
-    public static final Color BORDER_COLOR = Color.LIGHT_GRAY;
+    public static final Color BORDER_COLOR = new Color(200, 200, 200);
     public static final int BORDER_MARGIN = 1;
-    public static final int POSITION_MARGIN = 15;
+    public static final int POSITION_MARGIN = 60;
 
     public BossEnemyShield(int bossPosX, int bossPosY, int bossSizeX, int bossSizeY) {
         super(bossPosX - POSITION_MARGIN, bossPosY - POSITION_MARGIN,

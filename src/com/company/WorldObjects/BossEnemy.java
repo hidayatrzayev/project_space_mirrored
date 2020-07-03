@@ -7,6 +7,8 @@ import com.company.UIComponents.BossEnemyHealthIndicator;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.List;
 
 
 public class BossEnemy extends Enemy {
@@ -26,7 +28,7 @@ public class BossEnemy extends Enemy {
     public void update(double elapsedTime) {
         super.update(elapsedTime);
         this.healthIndicator.update(this.posX, this.posY);
-        if (this.posY < 0) {
+        if (!this.isShieldToRemove()) {
             this.shield.update(this.posX, this.posY);
         }
     }
@@ -35,8 +37,15 @@ public class BossEnemy extends Enemy {
     public void draw(Graphics gc) {
         super.draw(gc);
         this.healthIndicator.draw(gc, health);
-        if (this.posY < 0) {
+        if (!this.isShieldToRemove()) {
             this.shield.draw(gc);
+        }
+    }
+
+    @Override
+    public void shoot(List<A_InteractableObject> shots, double elapsedTime) throws IOException {
+        if (this.isShieldToRemove()) {
+            super.shoot(shots, elapsedTime);
         }
     }
 

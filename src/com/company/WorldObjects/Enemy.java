@@ -117,9 +117,11 @@ public class Enemy extends A_InteractableObject {
         }
     }
 
-    public void shoot(List<A_InteractableObject> shots) throws IOException {
-        intervalAccumulation -= shootingInterval;
-        shootStrategy.shoot(this, shots);
+    public void shoot(List<A_InteractableObject> shots, double elapsedTime) throws IOException {
+        if (this.isTimeToShoot(elapsedTime)) {
+            intervalAccumulation -= shootingInterval;
+            shootStrategy.shoot(this, shots);
+        }
     }
 
     private void setShootingInterval() {
@@ -139,7 +141,7 @@ public class Enemy extends A_InteractableObject {
         this.setShootingInterval();
     }
 
-    public boolean isTimeToShoot(double elapsedTime) {
+    private boolean isTimeToShoot(double elapsedTime) {
         intervalAccumulation += elapsedTime;
         return intervalAccumulation >= shootingInterval;
     }
