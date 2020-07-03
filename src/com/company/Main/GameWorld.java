@@ -8,6 +8,7 @@ import com.company.Systems.GraphicSystem;
 import com.company.Systems.InputSystem;
 import com.company.Systems.PhysicsSystem;
 import com.company.Systems.SessionSystem;
+import com.company.WorldObjects.BossEnemyShield;
 import com.company.WorldObjects.A_InteractableObject;
 import com.company.WorldObjects.Player;
 import com.company.WorldObjects.PlayerShot;
@@ -19,6 +20,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -41,6 +43,7 @@ public class GameWorld
     private ArrayList<A_InteractableObject> enemies;
     private List<A_InteractableObject> players = new ArrayList<>();
     private EnemyHandler enemyHandler;
+    private boolean addedShield;
 
 
     public void setup() throws IOException
@@ -58,6 +61,7 @@ public class GameWorld
         shots = new ArrayList();
         worldObjects.add(shots);
         physicsSystem = new PhysicsSystem(worldObjects);
+        addedShield = false;
         int playerSpeed = 7 * (Utilities.WIDTH/1280);
         this.drawScreenState();
         inputSystem.configureInput(graphicSystem, player, playerSpeed, shots);
@@ -121,6 +125,14 @@ public class GameWorld
             this.handleShots(elapsedTime);
             this.drawStats();
             graphicSystem.redraw();
+
+            if (enemyHandler.isBossFight() && !addedShield) {
+                worldObjects.add(Collections.singletonList(enemyHandler.getBossEnemy().getShield()));
+                addedShield = true;
+            } else if (enemyHandler.getBossEnemy().isShieldToRemove()) {
+                worldObjects.removeIf(object -> !object.isEmpty() && object.get(0) instanceof BossEnemyShield);
+            }
+
             //SessionSystem.getInstance().setGameState(GameState.INTMENU);
             try {
                 long timeout = (lastLoopTime - System.nanoTime() + OPTIMAL_TIME) / 1000000;

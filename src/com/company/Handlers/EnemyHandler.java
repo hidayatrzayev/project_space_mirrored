@@ -9,7 +9,6 @@ import com.company.Shootings.ShootCircle;
 import com.company.Shootings.ShootDeathSpiral;
 import com.company.Shootings.ShootStraight;
 import com.company.Shootings.ShootStrategy;
-import com.company.Systems.BackgroundMusicPlayer;
 import com.company.Systems.SessionSystem;
 import com.company.WorldObjects.EnemyShot;
 import com.company.WorldObjects.A_InteractableObject;
@@ -21,10 +20,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import javax.imageio.ImageIO;
-import javax.swing.Timer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileReader;
@@ -161,10 +157,16 @@ public class EnemyHandler {
      * Creates and adds the boss enemy to the screen.
      */
     private void spawnBossEnemy() {
-        bossEnemy.setMoveStrategy(new MoveStraightNormal());
-        bossEnemy.setShootStrategy(new ShootCircle());
+        bossEnemy.setMoveStrategy(new MoveBossEnemy());
+        this.setBossEnemyShootStrategy();
         this.screenEnemies.add(bossEnemy);
         this.bossFight = true;
+    }
+
+    private void setBossEnemyShootStrategy() {
+        int filteredShootingPatternsAmount = this.filterShootingPatterns().size();
+        int patternIndex = Math.min(filteredShootingPatternsAmount, this.shootingPatterns.size() - 1);
+        this.bossEnemy.setShootStrategy(this.shootingPatterns.get(patternIndex));
     }
 
     /**
@@ -370,5 +372,9 @@ public class EnemyHandler {
      */
     public boolean isBossFight() {
         return this.bossFight;
+    }
+
+    public BossEnemy getBossEnemy() {
+        return this.bossEnemy;
     }
 }
