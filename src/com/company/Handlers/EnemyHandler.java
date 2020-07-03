@@ -21,10 +21,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import javax.imageio.ImageIO;
-import javax.swing.Timer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileReader;
@@ -38,7 +35,11 @@ import java.util.stream.Collectors;
 public class EnemyHandler {
 
     public static final int MAX_SCREEN_ENEMIES = 6;
+    public static final String BOSS_FIGHT_SOUND = "resources/Audio/boss_fight.wav";
+
     private static final Map<Integer, List<BufferedImage>> presets = new HashMap<>();
+    private static BufferedImage bossFightLabel;
+
 
     private final List<MoveStrategy> movementPatterns = new ArrayList<>(
             Arrays.asList(
@@ -67,17 +68,20 @@ public class EnemyHandler {
     private List<A_InteractableObject> screenEnemies;
     private List<A_InteractableObject> enemyShots;
     private BossEnemy bossEnemy;
+    private double bossFightSoundDuration = 2.0d;
+    private double timeElapsedSinceLastEnemyKilled = 0.0d;
 
 
     static {
         try {
             loadPresets();
+            bossFightLabel = ImageIO.read(new File("resources/Data/boss_fight_label.png"));
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
     }
 
-    public EnemyHandler(int complexity, String bossEnemyId, int currentLevel) {
+    public EnemyHandler(int complexity, String bossEnemyId, int currentLevel) throws IOException {
         this.complexity = complexity;
         this.currentLevel = currentLevel;
         this.bossFight = false;
@@ -161,10 +165,16 @@ public class EnemyHandler {
      * Creates and adds the boss enemy to the screen.
      */
     private void spawnBossEnemy() {
-        bossEnemy.setMoveStrategy(new MoveStraightNormal());
-        bossEnemy.setShootStrategy(new ShootCircle());
+        bossEnemy.setMoveStrategy(new MoveBossEnemy());
+        this.setBossEnemyShootStrategy();
         this.screenEnemies.add(bossEnemy);
         this.bossFight = true;
+    }
+
+    private void setBossEnemyShootStrategy() {
+        int filteredShootingPatternsAmount = this.filterShootingPatterns().size();
+        int patternIndex = Math.min(filteredShootingPatternsAmount, this.shootingPatterns.size() - 1);
+        this.bossEnemy.setShootStrategy(this.shootingPatterns.get(patternIndex));
     }
 
     /**
@@ -207,6 +217,9 @@ public class EnemyHandler {
      * @param gc - {@code Graphics} object that draws on the screen
      */
     public void drawAll(Graphics gc) {
+        if (this.bossFightSoundPlaying()) {
+            this.drawBossFightLabel(gc);
+        }
         this.drawEnemies(gc);
         this.drawEnemyShots(gc);
     }
@@ -228,16 +241,28 @@ public class EnemyHandler {
         this.enemyShots.forEach((shot) -> shot.draw(gc));
     }
 
+    private void drawBossFightLabel(Graphics gc) {
+        gc.drawImage(bossFightLabel,
+                Utilities.WIDTH / 2 - bossFightLabel.getWidth() / 2,
+                Utilities.HEIGHT / 2 - bossFightLabel.getHeight() / 2,
+                null);
+    }
+
     /**
      * Updates all the enemies on the screen and their respective shots.
      * Additionally randomly chooses enemies to shoot at the player.
      */
     public void updateAll(double elapsedTime) {
         if (this.screenEnemies.isEmpty() && this.enemies.isEmpty()) {
-            if (!bossFight) {
+            if (!bossFight && !this.bossFightSoundPlaying()) {
+                this.playBossFightSound(elapsedTime);
+            }
+
+            this.timeElapsedSinceLastEnemyKilled += elapsedTime;
+
+            if (this.isTimeToSpawnBossEnemy()) {
                 this.spawnBossEnemy();
-            } else {
-                return;
+                this.timeElapsedSinceLastEnemyKilled = 0;
             }
         }
 
@@ -290,8 +315,8 @@ public class EnemyHandler {
     private void shootAll(double elapsedTime) throws IOException {
         for (A_InteractableObject screenEnemy : screenEnemies) {
             Enemy currentEnemy = (Enemy) screenEnemy;
-            if (!currentEnemy.isExploding() && currentEnemy.isTimeToShoot(elapsedTime)) {
-                currentEnemy.shoot(enemyShots);
+            if (!currentEnemy.isExploding()) {
+                currentEnemy.shoot(enemyShots, elapsedTime);
             }
         }
     }
@@ -301,7 +326,7 @@ public class EnemyHandler {
      *
      * @return newly created {@code Enemy} object
      */
-    private Enemy createRandomEnemy() throws IOException {
+    private Enemy createRandomEnemy() {
         Random random = new Random();
         List<BufferedImage> currentLevelPresets = presets.get(currentLevel);
         BufferedImage enemyShipImage = currentLevelPresets.get(random.nextInt(currentLevelPresets.size()));
@@ -343,6 +368,30 @@ public class EnemyHandler {
     }
 
     /**
+     * Starts the thread which plays the "Boss Fight" sound
+     */
+    private void playBossFightSound(double elapsedTime) {
+        (new Thread(new BackgroundMusicPlayer(BOSS_FIGHT_SOUND))).start();
+        timeElapsedSinceLastEnemyKilled += elapsedTime;
+    }
+
+    /**
+     * Checks if it's already time to spawn the boss enemy
+     */
+    private boolean isTimeToSpawnBossEnemy() {
+        return this.timeElapsedSinceLastEnemyKilled >= this.bossFightSoundDuration;
+    }
+
+    /**
+     * Checks if the "Boss Fight" sound is still playing (duration should be approx. 2 seconds)
+     * @return
+     */
+    private boolean bossFightSoundPlaying() {
+        return this.timeElapsedSinceLastEnemyKilled > 0 &&
+                timeElapsedSinceLastEnemyKilled < this.bossFightSoundDuration;
+    }
+
+    /**
      * Returns the list of enemies currently shown on the screen.
      */
     public List<A_InteractableObject> getScreenEnemies() {
@@ -370,5 +419,9 @@ public class EnemyHandler {
      */
     public boolean isBossFight() {
         return this.bossFight;
+    }
+
+    public BossEnemy getBossEnemy() {
+        return this.bossEnemy;
     }
 }

@@ -74,6 +74,11 @@ public class PlayerShot extends A_InteractableObject
                 if (this.getBounds().intersects(a_interactableObject.getBounds())) {
                         this.exploding = true;
                 }
+            } else if (a_interactableObject instanceof BossEnemyShield) {
+                if (this.getBounds().intersects(a_interactableObject.getBounds())) {
+                    this.exploding = true;
+                    this.destroyed = true;
+                }
             }
     }
 

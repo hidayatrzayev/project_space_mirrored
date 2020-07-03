@@ -20,7 +20,6 @@ public class Enemy extends A_InteractableObject {
 
     protected int speed;
     protected int health;
-    protected int direction;
     protected double shootingInterval;
     protected double intervalAccumulation = 0.0;
     protected MoveStrategy moveStrategy;
@@ -32,11 +31,10 @@ public class Enemy extends A_InteractableObject {
     /**
      * This constructor specifies the default health of 1 and is meant to be used to create regular enemies
      */
-    public Enemy(int posX, int posY, int sizeX, int sizeY, BufferedImage img, int speed) throws IOException {
+    public Enemy(int posX, int posY, int sizeX, int sizeY, BufferedImage img, int speed) {
         super(posX, posY, sizeX, sizeY, img);
         this.speed = speed;
         this.health = 1;
-        this.direction = 1;
         this.explosionAnimations = Utilities.explosionAnimations;
         this.mesh = new ComplicatedMesh(img);
         this.lastAttacker = new ArrayList<>();
@@ -45,11 +43,10 @@ public class Enemy extends A_InteractableObject {
     /**
      * This constructor specifies a dynamic health value and is meant to be used to create boss enemies
      */
-    public Enemy(int posX, int posY, int sizeX, int sizeY, BufferedImage img, int speed, int health) throws IOException {
+    public Enemy(int posX, int posY, int sizeX, int sizeY, BufferedImage img, int speed, int health) {
         super(posX, posY, sizeX, sizeY, img);
         this.speed = speed;
         this.health = health;
-        this.direction = 1;
         this.lastAttacker = new ArrayList<>();
     }
 
@@ -107,9 +104,11 @@ public class Enemy extends A_InteractableObject {
      * If the health comes down to 0 after deduction, the enemy is destroyed.
      */
     public void damage() {
-        health--;
+        if (health > 0) {
+            health--;
+        }
         if (health == 0) {
-            if (this instanceof Enemy && !(this instanceof BossEnemy)){
+            if (!(this instanceof BossEnemy)){
                 SessionSystem.getInstance().setCurrentScore(100);
             }else {
                 SessionSystem.getInstance().setCurrentScore(1000);
@@ -118,9 +117,11 @@ public class Enemy extends A_InteractableObject {
         }
     }
 
-    public void shoot(List<A_InteractableObject> shots) throws IOException {
-        intervalAccumulation -= shootingInterval;
-        shootStrategy.shoot(this, shots);
+    public void shoot(List<A_InteractableObject> shots, double elapsedTime) throws IOException {
+        if (this.isTimeToShoot(elapsedTime)) {
+            intervalAccumulation -= shootingInterval;
+            shootStrategy.shoot(this, shots);
+        }
     }
 
     private void setShootingInterval() {
@@ -140,7 +141,7 @@ public class Enemy extends A_InteractableObject {
         this.setShootingInterval();
     }
 
-    public boolean isTimeToShoot(double elapsedTime) {
+    private boolean isTimeToShoot(double elapsedTime) {
         intervalAccumulation += elapsedTime;
         return intervalAccumulation >= shootingInterval;
     }
